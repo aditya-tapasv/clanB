@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: var(--font-display), "Syne", ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-body), "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
+
+  --color-ink: #030706;        /* page bg (Mash exact) */
+  --color-ink-soft: #071210;   /* alternate section bg */
+  --color-panel: #050a09;      /* data panels */
+  --color-mist: #A8A29E;       /* muted text */
+  --color-signal: #5CF111;     /* CLAN B LIME (logo) — Mash used #10B981 */
+  --color-signal-alt: #10B981; /* Mash emerald, kept for secondary accents */
+  --color-glow: #06B6D4;       /* cyan secondary (Mash exact) */
+}
+
+html { scroll-behavior: auto; overflow-x: clip; }
+html.lenis, html.lenis body { height: auto; }
+body { background: var(--color-ink); color: #fff; font-family: var(--font-body); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; overflow-x: clip; }
+::selection { background: color-mix(in oklab, var(--color-signal) 35%, transparent); color: #fff; }
+
+.page-shell { width: 100%; max-width: 1440px; margin-inline: auto; }
+.page-x { padding-inline: max(.75rem, env(safe-area-inset-left)) max(.75rem, env(safe-area-inset-right)); }
+@media (min-width: 640px)  { .page-x { padding-inline: max(1rem, env(safe-area-inset-left)) max(1rem, env(safe-area-inset-right)); } }
+@media (min-width: 1024px) { .page-x { padding-inline: max(1.25rem, env(safe-area-inset-left)) max(1.25rem, env(safe-area-inset-right)); } }
+
+.text-gradient-headline { color: transparent; background-image: linear-gradient(#fff, #a1a1aa); -webkit-background-clip: text; background-clip: text; }
+.grid-bg { background-image: linear-gradient(#ffffff0a 1px, transparent 0), linear-gradient(90deg, #ffffff0a 1px, transparent 0); background-size: 48px 48px; }
+.noise-overlay::before { content:""; pointer-events:none; position:absolute; inset:0; opacity:.035; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.section-seam-fade { mask-image: linear-gradient(transparent, #000 12% 88%, transparent); }
+
+@keyframes marquee-x { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+.marquee-track { animation: marquee-x 42s linear infinite; }
+.marquee-track-slow { animation-duration: 55s; }
+
+.hero-veil-blend { background: linear-gradient(#030706 0 38%, #030706eb 52%, #0307068c 68%, transparent 86%); }
+@media (min-width: 768px) { .hero-veil-blend { background: linear-gradient(118deg, #030706 0 28%, #030706eb 42%, #03070666 56%, transparent 72%); } }
+
+@media (prefers-reduced-motion: reduce) { .marquee-track, .marquee-track-slow { animation: none; } }
