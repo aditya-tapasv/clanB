@@ -41,7 +41,7 @@ pnpm test:e2e       # ~2.5 min: navigation, search, booking, axe, reduced motion
 
 ## Deploy to Vercel
 
-1. Import the repo. Set **Root Directory** to `clanb-site-kit`. The framework preset is detected as Next.js.
+1. Import the repo. The app is at the repository root, so keep the default Root Directory. The framework preset should read **Next.js**.
 2. Environment variables: set `NEXT_PUBLIC_SITE_URL` to the production URL, and leave `NEXT_PUBLIC_DATA_SOURCE` unset (mock) until the API is live.
 3. Add `ENABLE_EXPERIMENTAL_COREPACK=1` so Vercel uses the exact pnpm version pinned in `package.json`.
 4. Deploy. Nearly all pages are static (SSG). Only `/search`, `/checkout/[id]`, `/games` (for `?mood=`), `/events` (for `?host=`), `/login`, `/signup` and a few provider pages render on demand.
