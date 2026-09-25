@@ -190,7 +190,7 @@ export const HOME_CONTENT = {
           "Live standings",
         ],
         ctaLabel: "Organize a Tournament",
-        ctaHref: "/for-providers/organizers",
+        ctaHref: "/for-providers/partner",
         visualType: "metrics",
       },
       {
@@ -626,17 +626,16 @@ export const HOME_CONTENT = {
       {
         title: "For business",
         links: [
-          { label: "Become a Vendor", href: "/for-providers/host" },
-          { label: "List a Venue", href: "/for-providers/venues" },
-          { label: "Organize a Tournament", href: "/for-providers/organizers" },
-          { label: "Corporate & Group Events", href: "/for-providers/corporate" },
+          { label: "Become a Host", href: "/for-providers/host" },
+          { label: "Partner With Clan B", href: "/for-providers/partner" },
+          { label: "List Your Venue", href: "/for-providers/venues" },
         ],
       },
       {
         title: "Company",
         links: [
           { label: "About", href: "/about" },
-          { label: "Contact", href: "/about#contact" },
+          { label: "Contact", href: "/contact" },
           { label: "Careers", href: "/about#careers" },
           { label: "Partner with Us", href: "/for-providers" },
         ],

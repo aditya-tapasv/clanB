@@ -3,20 +3,18 @@ import { repo } from "@/lib/data/repo";
 import { absoluteUrl } from "@/lib/seo";
 import { HELP_TOPICS } from "@/content/help";
 import { LEGAL_DOCS } from "@/content/legal";
-import { SUB_LANDINGS } from "@/content/providers";
 
 const STATIC_ROUTES = [
   "/", "/play", "/play/request", "/events", "/venues", "/sports", "/games", "/clubs", "/about", "/help",
-  "/for-providers", "/for-providers/apply",
+  "/for-providers", "/for-providers/host", "/for-providers/partner", "/for-providers/venues", "/contact",
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [events, venues, games, sports, orgs] = await Promise.all([
+  const [events, venues, games, sports] = await Promise.all([
     repo.listEvents(),
     repo.listVenues(),
     repo.listGames(),
     repo.listSports(),
-    repo.listOrganizations(),
   ]);
 
   const paths = [
@@ -25,10 +23,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...venues.map((v) => `/venues/${v.slug}`),
     ...games.map((g) => `/games/${g.slug}`),
     ...sports.map((s) => `/sports/${s.slug}`),
-    ...orgs.map((o) => `/providers/${o.slug}`),
     ...HELP_TOPICS.map((t) => `/help/${t.slug}`),
     ...LEGAL_DOCS.map((d) => `/legal/${d.slug}`),
-    ...SUB_LANDINGS.map((l) => `/for-providers/${l.slug}`),
   ];
 
   return paths.map((path) => ({

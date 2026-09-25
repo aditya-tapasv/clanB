@@ -10,9 +10,8 @@ import {
   Search,
   Dices,
   Building2,
-  Trophy,
-  Users,
-  Compass,
+  Handshake,
+  Mail,
   ArrowUpRight,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
@@ -31,34 +30,28 @@ const NAV_LINKS = [
 
 const PROVIDER_LINKS = [
   {
-    title: "Become a Vendor",
-    desc: "Launch sessions & coaching",
+    title: "Become a Host",
+    desc: "Run sessions & coaching",
     href: "/for-providers/host",
     icon: Dices,
   },
   {
-    title: "List a Venue",
+    title: "Partner With Clan B",
+    desc: "Vendors, organizers & corporates",
+    href: "/for-providers/partner",
+    icon: Handshake,
+  },
+  {
+    title: "List Your Venue",
     desc: "Monetize tables, courts & rooms",
     href: "/for-providers/venues",
     icon: Building2,
   },
   {
-    title: "Organize a Tournament",
-    desc: "Brackets, scoring & standings",
-    href: "/for-providers/organizers",
-    icon: Trophy,
-  },
-  {
-    title: "Corporate & Group Events",
-    desc: "Tailored team playdays",
-    href: "/for-providers/corporate",
-    icon: Users,
-  },
-  {
-    title: "All Provider Tools",
-    desc: "Overview of platform operations",
-    href: "/for-providers",
-    icon: Compass,
+    title: "Contact Us",
+    desc: "General questions & enquiries",
+    href: "/contact",
+    icon: Mail,
   },
 ];
 

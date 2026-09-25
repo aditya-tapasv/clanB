@@ -14,8 +14,10 @@ const PAGES = [
   ["sports", "/sports"],
   ["games", "/games"],
   ["for-providers", "/for-providers"],
-  ["provider-today", "/provider"],
-  ["provider-insights", "/provider/insights"],
+  ["become-a-host", "/for-providers/host"],
+  ["partner", "/for-providers/partner"],
+  ["list-venue", "/for-providers/venues"],
+  ["contact", "/contact"],
 ];
 
 await mkdir(OUT, { recursive: true });
@@ -27,7 +29,7 @@ for (const [label, width, height, mobile] of [["desktop", 1440, 900, false], ["m
   for (const [name, path] of PAGES) {
     await page.goto(BASE + path, { waitUntil: "networkidle" });
     await page.waitForTimeout(600);
-    await page.screenshot({ path: join(OUT, `${name}-${label}.png`), fullPage: !path.startsWith("/provider") });
+    await page.screenshot({ path: join(OUT, `${name}-${label}.png`), fullPage: true });
     console.log("captured", name, label);
   }
   await ctx.close();

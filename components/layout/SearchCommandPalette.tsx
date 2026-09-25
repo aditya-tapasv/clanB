@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, Calendar, Dices, Trophy, ArrowRight, X, Loader2, BadgeCheck } from "lucide-react";
+import { Search, MapPin, Calendar, Dices, Trophy, ArrowRight, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Dialog } from "@/components/ui/Dialog";
 import { repo } from "@/lib/data/repo";
@@ -20,7 +20,6 @@ const categoryIcons: Record<SearchCategory, typeof Calendar> = {
   Venue: MapPin,
   Event: Calendar,
   Sport: Trophy,
-  Provider: BadgeCheck,
 };
 
 const MAX_PER_GROUP = 3;

@@ -23,11 +23,11 @@ test.describe("landing navigation", () => {
     });
   }
 
-  test("reaches For Providers and the apply wizard", async ({ page }) => {
+  test("reaches For Providers and the Become a Host form", async ({ page }) => {
     await page.goto("/for-providers");
-    await page.getByRole("link", { name: "Apply to host" }).first().click();
-    await expect(page).toHaveURL(/\/for-providers\/apply/);
-    await expect(page.getByRole("heading", { name: "Organisation" })).toBeVisible();
+    await page.getByRole("link", { name: "Become a Host" }).first().click();
+    await expect(page).toHaveURL(/\/for-providers\/host/);
+    await expect(page.getByRole("heading", { name: "Run games people show up for" })).toBeVisible();
   });
 
   test("unknown URLs show the branded 404", async ({ page }) => {

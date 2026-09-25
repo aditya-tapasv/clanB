@@ -1,6 +1,6 @@
 import type { SearchResults } from "@/lib/data/repo";
 
-export type SearchCategory = "Event" | "Game" | "Sport" | "Venue" | "Provider";
+export type SearchCategory = "Event" | "Game" | "Sport" | "Venue";
 
 export interface SearchResultItem {
   id: string;
@@ -61,17 +61,6 @@ export function toSearchGroups(results: SearchResults): SearchGroup[] {
         category: "Venue",
         subtitle: v.address.neighbourhood,
         href: `/venues/${v.slug}`,
-      })),
-    },
-    {
-      category: "Provider",
-      label: "Hosts & organizers",
-      items: results.organizations.map((o) => ({
-        id: o.id,
-        title: o.name,
-        category: "Provider",
-        subtitle: `${o.verified ? "Verified · " : ""}${o.city}`,
-        href: `/providers/${o.slug}`,
       })),
     },
   ];

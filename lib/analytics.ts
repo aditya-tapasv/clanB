@@ -21,7 +21,8 @@ export type FunnelEventType =
   | "booking_cancel"
   | "waitlist_join"
   | "filter_change"
-  | "demand_request_submit";
+  | "demand_request_submit"
+  | "lead_form_submit";
 
 export interface EventProperties {
   [key: string]: string | number | boolean | undefined | null;

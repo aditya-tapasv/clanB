@@ -2,12 +2,13 @@
 
 > **Status legend:** `[ ]` todo · `[~]` in progress · `[x]` done (acceptance met) · `[!]` blocked (give the reason)
 > Any AI must update this file after every task. It is the memory of the project; chat history is not.
-> Spec: `clanb-site-kit/MASTER_PROMPT.md` (§ numbers below). Motion reference IDs A01–A50: `docs/reference/mash-motion-forensics.md`.
+> Spec: `MASTER_PROMPT.md` (§ numbers below; the repo was moved from `clanb-site-kit/` to the repo root on 2026-09-24 so Vercel builds it with default settings). Motion reference IDs A01–A50: `docs/reference/mash-motion-forensics.md`.
+> **2026-09-25 pivot:** the product owner decided the site does not need the booking journey or provider workspace for this demo. The "For Providers" section (marketing pages, apply wizard) and the entire `/provider` dashboard were replaced with four lead-capture forms — Become a Host, Partner With Clan B, List Your Venue, Contact Us — that read as the core of the site for now. Phase 6 (Booking journey), Phase 7 (For Providers) and Phase 8 (Provider workspace) below are **superseded**; their code for Phase 7/8 was deleted, Phase 6 (`/checkout`, `/me`, login) was left in place but is no longer the focus. See the Decisions log.
 
 ## Current focus
-- **Phase:** Done — awaiting product-owner decisions (T-1004) and Safari/Firefox pass (T-906)
-- **Next task:** T-906 / T-1004 / T-909 value-by-value audit
-- **Last updated:** 2026-09-24 · Claude Code
+- **Phase:** Pivoted — lead-capture forms are the current core (see 2026-09-25 pivot note above)
+- **Next task:** Backend for the 4 lead forms (Google Sheets endpoint) when ready — see `lib/leads.ts` / `NEXT_PUBLIC_LEADS_ENDPOINT` in README
+- **Last updated:** 2026-09-25 · Claude Code (Sonnet 5)
 
 ## Progress summary
 | Phase | Tasks | Done |
@@ -233,3 +234,21 @@
 | 2026-09-24 | Claude Code (Opus 5.5) | T-801–T-809 | Phase 8 complete. Crawl 489 URLs clean. Browser: org switch, AI draft → publish, check-in persists across reload, announcement validation + send, hours validation, blackout add/remove, session cancel, bookings filters, payouts, insights; console clean. Fixed: "every Friday" not weekly, payout period extending into the future (seed bookings dated in future), Today page title template, mobile nav scrollbar. |
 | 2026-09-24 | Claude Code (Opus 5.5) | T-901–T-909 | Phase 9. Playwright + axe suite green (73). Fixed: hero timeline scope bug, dip overlay under reduced motion, logo preload warning, unlabelled navs, faint text. Added WebGL guard + error boundaries for Vercel. |
 | 2026-09-24 | Claude Code (Opus 5.5) | T-1001–T-1004 | README with Vercel guide, API swap guide, screenshots + booking recording (first full-page home capture). Open decisions compiled. |
+
+## Decisions log — 2026-09-25 pivot (lead-capture forms)
+
+| Area | Decision | Why |
+|---|---|---|
+| Scope | Booking/provider-workspace complexity is no longer the focus. Home page and player-facing pages (`/play`, `/events`, `/venues`, `/sports`, `/games`, `/checkout`, `/me`, `/login` …) were left untouched. | Explicit product-owner instruction: keep the homepage; change only the hosting/vendor side. |
+| `/for-providers` | Rebuilt as a hub linking to 3 forms + Contact, replacing the marketing landing + sub-landings + FAQ + reused home sections. | Simpler surface matching the new 4-form spec. |
+| `/for-providers/apply` (multi-step wizard) | Deleted. | Superseded by the 3 short forms. |
+| `/provider/*` (9-screen dense workspace) | Deleted (`components/provider/*`, `app/provider/*`). | Not needed without the booking/session-management flow it managed. |
+| `/providers/[slug]` (public provider profile) | Deleted. Removed the "Provider" group from global search (`lib/search.ts`) since it linked here. | Depended on the org/review data tied to bookings; out of scope now. |
+| New routes | `/for-providers/host`, `/for-providers/partner` (replaces `organizers`/`corporate`), `/for-providers/venues`, `/contact`. | One route per pasted form; `partner` merges the two old B2B sub-landings the user didn't ask to keep separate. |
+| Data collection | `lib/leads.ts`: mock submit (logs to the dev console) today; set `NEXT_PUBLIC_LEADS_ENDPOINT` to a Google Sheets–connected webhook (Apps Script / SheetMonkey / Zapier) later and it posts there with no component changes. | User: "for backend or excel we'll get back to it later" — UI first, swap-in point ready. |
+| Untouched | `lib/data/repo.ts` still has the unused provider-workspace methods (`getProviderDashboard`, `createSession`, …) and `lib/data/mock/providerStore.ts`. Left in place, not imported by any UI. | Dead but harmless; avoids a larger, riskier refactor for a part of the app that may return. |
+
+## Session log — 2026-09-25
+| Date | Tool / model | Tasks | Notes |
+|---|---|---|---|
+| 2026-09-25 | Claude Code (Sonnet 5) | Lead-capture pivot | Deleted `/for-providers/[type]`, `/for-providers/apply`, `/provider/*`, `/providers/[slug]` and their components/content. Built `lib/leads.ts`, `content/leadForms.ts`, `components/leads/*` (BecomeHostForm, PartnerForm, ListVenueForm, ContactForm + shared LeadSuccess/CheckboxGroup), and 5 routes. Fixed every cross-reference: header dropdown, footer, home `hostStack` CTA, sitemap, robots, search, e2e specs, screenshot script, README. `pnpm typecheck && pnpm lint && pnpm build` clean (125 pages). Browser-tested all 4 forms end to end (validation + success + reference code) and confirmed old routes now 404 cleanly instead of crashing. |

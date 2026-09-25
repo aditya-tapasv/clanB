@@ -4,7 +4,7 @@ import { test, expect } from "./fixtures";
 // One representative page per template keeps the run short; the link crawl covers every URL.
 const PAGES = [
   "/", "/events/friday-catan-social-kora", "/venues/smash-hub-indiranagar", "/sports/badminton", "/games",
-  "/help/report", "/for-providers", "/for-providers/apply", "/checkout/evt-001", "/provider/sessions/new",
+  "/help/report", "/for-providers", "/for-providers/host", "/for-providers/partner", "/for-providers/venues", "/contact", "/checkout/evt-001",
 ];
 
 // FRD §22 / T-902 acceptance — axe: zero critical violations. Measured with reduced motion so
