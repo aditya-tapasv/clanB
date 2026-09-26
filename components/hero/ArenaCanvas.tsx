@@ -30,7 +30,7 @@ varying vec2 vUv;
 uniform sampler2D uMap;
 uniform float uTime, uZoom, uPulse, uHover;
 uniform vec2 uResolution, uImageSize;
-uniform vec3 uSignal, uCyan;
+uniform vec3 uSignal, uAccent;
 
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
@@ -69,10 +69,10 @@ void main() {
   arc += smoothstep(0.01, 0.0, abs(uv.x - 0.62 - 0.03 * cos(uv.y * 8.0)));
 
   vec3 color = tex.rgb;
-  color += mix(uSignal, uCyan, 0.55) * glowMask * (0.12 + uPulse * 0.18 + uHover * 0.14);
-  color += uCyan * stream * 0.4;
+  color += mix(uSignal, uAccent, 0.55) * glowMask * (0.12 + uPulse * 0.18 + uHover * 0.14);
+  color += uAccent * stream * 0.3;
   color += uSignal * ring * glowMask;
-  color += mix(uCyan, uSignal, 0.4) * (n1 * 0.45 + arc * 0.2);
+  color += mix(uAccent, uSignal, 0.4) * (n1 * 0.45 + arc * 0.2);
 
   float vig = smoothstep(1.2, 0.28, length((vUv - 0.5) * vec2(1.12, 1.05)));
   color *= mix(0.62, 1.0, vig);
@@ -116,7 +116,8 @@ function Scene({
       uResolution: { value: new THREE.Vector2(size.width, size.height) },
       uImageSize: { value: new THREE.Vector2(2048, 1152) },
       uSignal: { value: new THREE.Color("#5CF111") },
-      uCyan: { value: new THREE.Color("#06B6D4") },
+      // Secondary accent is white (was cyan) so the hero only uses brand lime + white.
+      uAccent: { value: new THREE.Color("#FFFFFF") },
     };
   }, [texture, size.width, size.height]);
 
@@ -153,7 +154,7 @@ function createParticlesB(): THREE.BufferGeometry {
 }
 
 // In Scene:
-  // Particles A: 110 points cyan
+  // Particles A: 110 points white
   const particlesA = useMemo(() => createParticlesA(), []);
 
   // Particles B: 40 points lime
@@ -219,11 +220,11 @@ function createParticlesB(): THREE.BufferGeometry {
         </mesh>
       </group>
 
-      {/* Particles A (Cyan) */}
+      {/* Particles A (White) */}
       <points ref={pointsARef} geometry={particlesA}>
         <pointsMaterial
           size={0.018}
-          color="#06B6D4"
+          color="#FFFFFF"
           transparent
           opacity={0.55}
           depthWrite={false}

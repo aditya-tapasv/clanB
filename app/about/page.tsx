@@ -27,7 +27,7 @@ export default function AboutPage() {
             <Button href="/play" variant="primary" withArrow>
               Book a Game
             </Button>
-            <Button href="/for-providers" variant="ghost">
+            <Button href="/services" variant="ghost">
               Become a Partner
             </Button>
           </>

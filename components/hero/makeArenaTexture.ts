@@ -26,7 +26,7 @@ export function makeArenaTexture(): THREE.CanvasTexture {
     height * 0.85
   );
   glow.addColorStop(0, "rgba(92, 241, 17, 0.18)");
-  glow.addColorStop(0.4, "rgba(6, 182, 212, 0.12)");
+  glow.addColorStop(0.4, "rgba(255, 255, 255, 0.06)");
   glow.addColorStop(1, "rgba(3, 7, 6, 0)");
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, width, height);
@@ -80,13 +80,13 @@ export function makeArenaTexture(): THREE.CanvasTexture {
       ctx.fillStyle = "rgba(11, 21, 18, 0.65)";
       drawRoundedRect(x, y, tileSize, tileSize, 4);
 
-      // 9% lime tiles, 3% cyan tiles on right 60%
+      // 9% lime tiles, 3% white tiles on right 60% (brand colours: lime + white)
       if (rand < 0.09) {
         const alpha = 0.6 + rand * 4.4 * 0.4; // 0.6 to 1.0
         ctx.fillStyle = `rgba(92, 241, 17, ${alpha})`;
         drawRoundedRect(x, y, tileSize, tileSize, 4);
       } else if (rand < 0.12) {
-        ctx.fillStyle = "rgba(6, 182, 212, 0.85)";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
         drawRoundedRect(x, y, tileSize, tileSize, 4);
       }
     }
@@ -96,16 +96,18 @@ export function makeArenaTexture(): THREE.CanvasTexture {
   const centerX = Math.floor((cols * 0.68));
   const centerY = Math.floor((rows * 0.52));
 
-  // "b" pixel tile coordinates relative to center
+  // "b" pixel tile coordinates relative to center — traced from the logo's "b":
+  // one-tile ascender, bowl with stepped right corners, and the foot to the left.
+  // (No extra tile beside the top of the stem: the logo has none.)
   const bTiles = [
     // Stem
-    [0, -4], [0, -3], [0, -2], [0, -1], [0, 0], [0, 1], [0, 2], [0, 3],
-    // Bowl
+    [0, -1], [0, 0], [0, 1], [0, 2], [0, 3],
+    // Bowl: top bar, stepped right side, bottom bar
     [1, 0], [2, 0], [3, 0],
-    [3, 1], [3, 2],
-    [1, 3], [2, 3],
-    // Accent dot
-    [1, -4],
+    [4, 1], [4, 2],
+    [1, 3], [2, 3], [3, 3],
+    // Foot
+    [-1, 3],
   ];
 
   for (const [dx, dy] of bTiles) {

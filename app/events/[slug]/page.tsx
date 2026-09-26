@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { SaveButton } from "@/components/account/SaveButton";
 import { InteriorPageLayout } from "@/components/interior/InteriorPageLayout";
 import { PageHero } from "@/components/interior/PageHero";
 import { CinematicSection } from "@/components/motion/CinematicSection";
@@ -54,7 +53,6 @@ export default async function EventDetailPage({ params }: PageProps) {
           { label: "Events", href: "/events" },
           { label: data.event.title },
         ]}
-        badge={<SaveButton item={{ kind: "event", slug: data.event.slug, title: data.event.title }} />}
       />
 
       <CinematicSection className="py-12 md:py-16">

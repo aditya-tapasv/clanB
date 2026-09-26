@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
 import { PARTNER_FORM } from "@/content/leadForms";
-import { submitLead } from "@/lib/leads";
+import { submitPartnerEnquiry } from "@/lib/api/partners";
 import { track } from "@/lib/analytics";
 import { LeadSuccess } from "./LeadSuccess";
 import { CheckboxGroup } from "./CheckboxGroup";
@@ -25,16 +25,18 @@ interface PartnerValues {
 
 const EMPTY: PartnerValues = { businessName: "", contactPerson: "", email: "", phone: "", businessType: "", location: "", message: "" };
 
-export function PartnerForm() {
+export function PartnerForm({ initialBusinessType = "" }: { initialBusinessType?: string }) {
   const [reference, setReference] = useState<string | null>(null);
   const [services, setServices] = useState<string[]>([]);
   const [servicesError, setServicesError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const defaults: PartnerValues = { ...EMPTY, businessType: initialBusinessType };
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<PartnerValues>({ defaultValues: EMPTY });
+  } = useForm<PartnerValues>({ defaultValues: defaults });
 
   const toggleService = (option: string) => {
     setServices((prev) => (prev.includes(option) ? prev.filter((s) => s !== option) : [...prev, option]));
@@ -46,9 +48,14 @@ export function PartnerForm() {
       setServicesError("Choose at least one service.");
       return;
     }
-    const { reference } = await submitLead("partner", { ...values, services: services.join(", ") });
-    track("lead_form_submit", { form: "partner" });
-    setReference(reference);
+    setSubmitError(null);
+    try {
+      const { reference } = await submitPartnerEnquiry({ ...values, services });
+      track("lead_form_submit", { form: "partner" });
+      setReference(reference);
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Couldn't submit right now. Please try again.");
+    }
   };
 
   if (reference) {
@@ -59,7 +66,7 @@ export function PartnerForm() {
         reference={reference}
         resetLabel="Submit another enquiry"
         onReset={() => {
-          reset(EMPTY);
+          reset(defaults);
           setServices([]);
           setReference(null);
         }}
@@ -143,6 +150,12 @@ export function PartnerForm() {
           {...register("message")}
         />
       </div>
+
+      {submitError && (
+        <p role="alert" className="text-sm text-rose-400">
+          {submitError}
+        </p>
+      )}
 
       <Button type="submit" variant="primary" disabled={isSubmitting} className="w-full sm:w-auto">
         {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}

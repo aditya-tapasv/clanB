@@ -8,11 +8,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { track } from "@/lib/analytics";
-import { useSession } from "@/lib/auth";
 import { formatINR, formatSessionTime } from "@/lib/format";
 import { DECLINE_TEST_METHOD, isBookingError, repo, type CheckoutItem, type SlotRequest } from "@/lib/data/repo";
 import type { Booking, Payment } from "@/lib/data/types";
-import { AuthForm } from "@/components/auth/AuthForm";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { HoldTimer } from "./HoldTimer";
@@ -22,7 +20,6 @@ import { WaitlistForm } from "./WaitlistForm";
 
 type Step =
   | { name: "review" }
-  | { name: "signin" }
   | { name: "pay"; booking: Booking; payment: Payment }
   | { name: "confirmed"; booking: Booking; payment: Payment; method: string }
   | { name: "expired" }
@@ -37,6 +34,7 @@ const PAYMENT_METHODS = [
 ] as const;
 
 const STEPS = ["Review", "Pay", "Confirmed"] as const;
+const GUEST_USER_ID = "usr-guest-current";
 
 export interface CheckoutFlowProps {
   item: CheckoutItem;
@@ -68,7 +66,6 @@ function StepIndicator({ current }: { current: number }) {
 }
 
 export function CheckoutFlow({ item, initialQuantity, slot }: CheckoutFlowProps) {
-  const session = useSession();
   const { session: bookable, policy } = item;
   const isSlot = item.kind === "slot";
   const venue = item.venue;
@@ -112,10 +109,8 @@ export function CheckoutFlow({ item, initialQuantity, slot }: CheckoutFlowProps)
     }
   };
 
-  const startHold = () => {
-    if (session.status === "signed-in") hold(session.user.id);
-    else setStep({ name: "signin" });
-  };
+  // No accounts: bookings are made as a guest.
+  const startHold = () => hold(GUEST_USER_ID);
 
   const applyPromo = async () => {
     if (step.name !== "pay" || !promo.trim()) return;
@@ -261,7 +256,7 @@ export function CheckoutFlow({ item, initialQuantity, slot }: CheckoutFlowProps)
                 <Button
                   type="button"
                   variant="primary"
-                  disabled={!agreed || busy || session.status === "loading"}
+                  disabled={!agreed || busy}
                   onClick={startHold}
                   className="w-full sm:w-auto"
                 >
@@ -274,23 +269,6 @@ export function CheckoutFlow({ item, initialQuantity, slot }: CheckoutFlowProps)
                 </p>
               </div>
             </>
-          )}
-
-          {step.name === "signin" && (
-            <section className="rounded-2xl border border-white/10 bg-panel p-6">
-              <h2 className="font-display text-lg font-semibold text-white">Sign in to hold your booking</h2>
-              <p className="mt-1 text-sm text-mist">
-                We need a way to send your QR code and receipt. It takes a few seconds.
-              </p>
-              <AuthForm mode="login" onSignedIn={(user) => hold(user.id)} className="mt-6 max-w-sm" />
-              <button
-                type="button"
-                onClick={() => setStep({ name: "review" })}
-                className="mt-4 text-xs text-mist hover:text-white"
-              >
-                ← Back to review
-              </button>
-            </section>
           )}
 
           {step.name === "pay" && (
@@ -381,8 +359,7 @@ export function CheckoutFlow({ item, initialQuantity, slot }: CheckoutFlowProps)
                 <div>
                   <h2 className="font-display text-2xl font-semibold text-white">You&apos;re booked!</h2>
                   <p className="mt-1 text-sm text-mist">
-                    Show this QR code at check-in. We&apos;ve sent the receipt to{" "}
-                    {session.status === "signed-in" ? session.user.email : "your email"}.
+                    Show this QR code at check-in, and keep a screenshot of this receipt.
                   </p>
                 </div>
               </div>
@@ -398,11 +375,8 @@ export function CheckoutFlow({ item, initialQuantity, slot }: CheckoutFlowProps)
                 </div>
               </div>
               <div className="flex flex-wrap gap-3">
-                <Button href="/me" variant="primary" withArrow>
-                  View in My Clan B
-                </Button>
-                <Button href="/play" variant="ghost">
-                  Find another game
+                <Button href="/venues" variant="primary" withArrow>
+                  Explore more venues
                 </Button>
               </div>
             </section>

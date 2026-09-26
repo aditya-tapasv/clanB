@@ -13,10 +13,10 @@ const PAGES = [
   ["venue", "/venues/smash-hub-indiranagar"],
   ["sports", "/sports"],
   ["games", "/games"],
-  ["for-providers", "/for-providers"],
-  ["become-a-host", "/for-providers/host"],
-  ["partner", "/for-providers/partner"],
-  ["list-venue", "/for-providers/venues"],
+  ["services", "/services"],
+  ["become-a-vendor", "/services/vendor"],
+  ["partner", "/services/partner"],
+  ["list-venue", "/services/list-venue"],
   ["contact", "/contact"],
 ];
 
@@ -44,10 +44,6 @@ await page.waitForTimeout(1200);
 await page.goto(`${BASE}/checkout/evt-001?quantity=2`, { waitUntil: "networkidle" });
 await page.getByRole("checkbox").check();
 await page.getByRole("button", { name: /Hold 2 seats/ }).click();
-await page.getByLabel("Email address").fill("demo@clanb.in");
-await page.getByRole("button", { name: "Send code" }).click();
-await page.getByLabel("Verification code").fill("123456");
-await page.getByRole("button", { name: "Sign in" }).click();
 await page.getByRole("timer").waitFor();
 await page.waitForTimeout(1000);
 await page.getByLabel("Promo code").fill("FIRSTGAME");
@@ -56,7 +52,7 @@ await page.getByText("Code applied.").waitFor();
 await page.getByRole("button", { name: /^Pay / }).click();
 await page.getByRole("heading", { name: "You're booked!" }).waitFor();
 await page.waitForTimeout(2000);
-await page.getByRole("link", { name: "View in My Clan B" }).click();
+await page.getByRole("link", { name: "Explore more venues" }).click();
 await page.waitForTimeout(2500);
 await ctx.close();
 const [video] = await readdir(videoDir);

@@ -20,15 +20,10 @@ test("command palette search is keyboard-usable", async ({ page }, info) => {
   await expect(page).toHaveURL(/\/(games\/wingspan|events\/)/);
 });
 
-test("book a seat: sign in → hold → pay → QR → My Clan B", async ({ page }) => {
+test("book a seat as a guest: hold → pay → QR", async ({ page }) => {
   await page.goto("/checkout/evt-001?quantity=1");
   await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: /Hold 1 seat/ }).click();
-
-  await page.getByLabel("Email address").fill("e2e@example.com");
-  await page.getByRole("button", { name: "Send code" }).click();
-  await page.getByLabel("Verification code").fill("246810");
-  await page.getByRole("button", { name: "Sign in" }).click();
 
   await expect(page.getByRole("timer")).toBeVisible();
   // Recoverable failure first.
@@ -41,6 +36,29 @@ test("book a seat: sign in → hold → pay → QR → My Clan B", async ({ page
   await expect(page.getByRole("heading", { name: "You're booked!" })).toBeVisible();
   await expect(page.locator("figure svg").first()).toBeVisible();
 
-  await page.getByRole("link", { name: "View in My Clan B" }).click();
-  await expect(page.getByText("Friday Night Catan & Craft Sodas").first()).toBeVisible();
+  await page.getByRole("link", { name: "Explore more venues" }).click();
+  await expect(page).toHaveURL(/\/venues$/);
+});
+
+test("contact us: name + query shows the confirmation popup", async ({ page }) => {
+  await page.goto("/contact");
+  await page.getByRole("button", { name: "Submit" }).click();
+  await expect(page.getByText("Enter your name.")).toBeVisible();
+  await page.getByLabel("Name").fill("E2E Tester");
+  await page.getByLabel("Query").fill("Do you run corporate game nights in Whitefield?");
+  await page.getByRole("button", { name: "Submit" }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByRole("heading", { name: "Query received!" })).toBeVisible();
+  await dialog.getByRole("button", { name: "Done" }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page.getByLabel("Name")).toHaveValue("");
+});
+
+test("venues are paginated", async ({ page }) => {
+  await page.goto("/venues");
+  const cards = page.locator("article");
+  await expect(cards).toHaveCount(6);
+  await page.getByRole("button", { name: "Page 2" }).click();
+  await expect(page.getByRole("button", { name: "Page 2" })).toHaveAttribute("aria-current", "page");
+  await expect(cards).toHaveCount(6);
 });

@@ -5,7 +5,6 @@ import {
   MapPin, Star, CheckCircle2, ShieldCheck,
   Calendar, ArrowRight, Award,
 } from "lucide-react";
-import { SaveButton } from "@/components/account/SaveButton";
 import { InteriorPageLayout } from "@/components/interior/InteriorPageLayout";
 import { PageHero } from "@/components/interior/PageHero";
 import { CinematicSection } from "@/components/motion/CinematicSection";
@@ -54,7 +53,6 @@ export default async function VenueDetailPage({ params }: PageProps) {
         ]}
         badge={
           <>
-            <SaveButton item={{ kind: "venue", slug: venue.slug, title: venue.name }} />
             {venue.rating && (
             <div className="flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-xs font-mono text-amber-400">
               <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
@@ -112,9 +110,7 @@ export default async function VenueDetailPage({ params }: PageProps) {
                 <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs text-mist">
                   <span>
                     Operated by:{" "}
-                    <Link href={`/providers/${organization.slug}`} className="font-semibold text-white hover:text-signal">
-                      {organization.name}
-                    </Link>
+                    <strong className="font-semibold text-white">{organization.name}</strong>
                   </span>
                   {organization.verified && (
                     <span className="inline-flex items-center gap-1 text-signal font-mono">

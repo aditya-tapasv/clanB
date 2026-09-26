@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { VENUE_FORM } from "@/content/leadForms";
-import { submitLead } from "@/lib/leads";
+import { submitVenueListing } from "@/lib/api/venueListings";
 import { track } from "@/lib/analytics";
 import { LeadSuccess } from "./LeadSuccess";
 import { CheckboxGroup } from "./CheckboxGroup";
@@ -26,6 +26,7 @@ const EMPTY: VenueValues = { venueName: "", owner: "", location: "", capacity: "
 export function ListVenueForm() {
   const [reference, setReference] = useState<string | null>(null);
   const [facilities, setFacilities] = useState<string[]>([]);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -38,9 +39,14 @@ export function ListVenueForm() {
   };
 
   const onSubmit = async (values: VenueValues) => {
-    const { reference } = await submitLead("venue", { ...values, facilities: facilities.join(", ") });
-    track("lead_form_submit", { form: "venue" });
-    setReference(reference);
+    setSubmitError(null);
+    try {
+      const { reference } = await submitVenueListing({ ...values, capacity: Number(values.capacity), facilities });
+      track("lead_form_submit", { form: "venue" });
+      setReference(reference);
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Couldn't submit right now. Please try again.");
+    }
   };
 
   if (reference) {
@@ -127,6 +133,12 @@ export function ListVenueForm() {
           </div>
         </div>
       </div>
+
+      {submitError && (
+        <p role="alert" className="text-sm text-rose-400">
+          {submitError}
+        </p>
+      )}
 
       <Button type="submit" variant="primary" disabled={isSubmitting} className="w-full sm:w-auto">
         {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}

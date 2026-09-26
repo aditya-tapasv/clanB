@@ -6,7 +6,7 @@ import { LEGAL_DOCS } from "@/content/legal";
 
 const STATIC_ROUTES = [
   "/", "/play", "/play/request", "/events", "/venues", "/sports", "/games", "/clubs", "/about", "/help",
-  "/for-providers", "/for-providers/host", "/for-providers/partner", "/for-providers/venues", "/contact",
+  "/services", "/services/vendor", "/services/partner", "/services/list-venue", "/contact",
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

@@ -3,7 +3,7 @@ import { InteriorPageLayout } from "@/components/interior/InteriorPageLayout";
 import { PageHero } from "@/components/interior/PageHero";
 import { CinematicSection } from "@/components/motion/CinematicSection";
 import { VenuesListingView } from "@/components/discovery/VenuesListingView";
-import { repo } from "@/lib/data/repo";
+import { getVenues } from "@/lib/api/venues";
 
 export const metadata: Metadata = {
   title: "Verified Venues & Play Spaces | Clan B",
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function VenuesPage() {
-  const venues = await repo.listVenues();
+  const firstPage = await getVenues({ page: 1 });
 
   return (
     <InteriorPageLayout>
@@ -29,7 +29,7 @@ export default async function VenuesPage() {
 
       <CinematicSection className="py-12 md:py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-          <VenuesListingView initialVenues={venues} />
+          <VenuesListingView initialPage={firstPage} />
         </div>
       </CinematicSection>
     </InteriorPageLayout>

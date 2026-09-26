@@ -92,9 +92,7 @@ export function EventDetailView({ data }: EventDetailViewProps) {
           <div className="flex flex-wrap items-center gap-4 text-xs text-mist pt-2">
             <div className="flex items-center gap-2">
               <span className="text-white/60">Organized by</span>
-              <Link href={`/providers/${organization.slug}`} className="font-semibold text-white hover:text-signal">
-                {organization.name}
-              </Link>
+              <span className="font-semibold text-white">{organization.name}</span>
               {organization.verified && (
                 <span className="inline-flex items-center gap-1 text-[11px] text-signal font-mono">
                   <CheckCircle2 className="h-3.5 w-3.5" />

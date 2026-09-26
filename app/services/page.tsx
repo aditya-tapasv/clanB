@@ -8,18 +8,18 @@ import { CinematicSection } from "@/components/motion/CinematicSection";
 import { HUB_CONTENT, type HubCard } from "@/content/leadForms";
 
 export const metadata: Metadata = {
-  title: "For Providers — Host, Partner or List a Venue",
+  title: "Services — Become a Vendor, Partner or List a Venue | Clan B",
   description: HUB_CONTENT.sub,
 };
 
 const ICONS: Record<HubCard["icon"], typeof Dices> = { Dices, Handshake, Building2 };
 
-export default function ForProvidersPage() {
+export default function ServicesPage() {
   const h = HUB_CONTENT;
 
   return (
     <InteriorPageLayout>
-      <PageHero eyebrow={h.eyebrow} title={h.title} sub={h.sub} breadcrumbs={[{ label: "For Providers" }]} />
+      <PageHero eyebrow={h.eyebrow} title={h.title} sub={h.sub} breadcrumbs={[{ label: "Services" }]} />
 
       <CinematicSection className="py-12 md:py-16">
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -29,7 +29,7 @@ export default function ForProvidersPage() {
               return (
                 <Link
                   key={card.slug}
-                  href={`/for-providers/${card.slug}`}
+                  href={`/services/${card.slug}`}
                   className="group relative flex flex-col justify-between rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 transition-all duration-300 hover:border-signal/40 hover:bg-white/[0.04]"
                 >
                   <div>

@@ -14,7 +14,7 @@ export const CLUBS_CONTENT = {
   startClub: {
     heading: "Run a regular group already?",
     body: "Hosts and organizers can list recurring sessions today — your club page will follow.",
-    cta: "Apply to host",
-    href: "/for-providers",
+    cta: "Become a Vendor",
+    href: "/services",
   },
 } as const;

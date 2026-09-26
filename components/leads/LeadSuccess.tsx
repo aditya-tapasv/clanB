@@ -24,8 +24,8 @@ export function LeadSuccess({ heading, body, reference, onReset, resetLabel }: L
         <Button type="button" variant="ghost" onClick={onReset}>
           {resetLabel}
         </Button>
-        <Button href="/for-providers" variant="signal-ghost">
-          Back to For Providers
+        <Button href="/services" variant="signal-ghost">
+          Back to Services
         </Button>
       </div>
     </div>

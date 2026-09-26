@@ -3,7 +3,7 @@ import { test, expect } from "./fixtures";
 // FRD §26.1 #11 — with reduced motion: content is fully visible without scroll theatrics.
 test.use({ reducedMotion: "reduce" });
 
-const PAGES = ["/", "/sports", "/games", "/about", "/for-providers"];
+const PAGES = ["/", "/venues", "/about", "/services"];
 
 for (const path of PAGES) {
   test(`reduced motion ${path}`, async ({ page }) => {

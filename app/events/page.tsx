@@ -51,9 +51,7 @@ export default async function EventsPage({ searchParams }: PageProps) {
             <div className="mb-6 flex flex-wrap items-center gap-3 text-sm text-mist">
               <span>
                 Hosted by{" "}
-                <Link href={`/providers/${hostOrg.slug}`} className="font-medium text-signal hover:underline">
-                  {hostOrg.name}
-                </Link>
+                <span className="font-medium text-signal">{hostOrg.name}</span>
               </span>
               <Link
                 href="/events"

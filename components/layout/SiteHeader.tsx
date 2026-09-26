@@ -16,35 +16,28 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
-import { useSession } from "@/lib/auth";
 import { SearchCommandPalette } from "./SearchCommandPalette";
 import { cn } from "@/lib/cn";
 
-const NAV_LINKS = [
-  { label: "Play", href: "/play" },
-  { label: "Events", href: "/events" },
-  { label: "Venues", href: "/venues" },
-  { label: "Sports", href: "/sports" },
-  { label: "Games", href: "/games" },
-];
+const NAV_LINKS = [{ label: "Venues", href: "/venues" }];
 
-const PROVIDER_LINKS = [
+const SERVICE_LINKS = [
   {
-    title: "Become a Host",
+    title: "Become a Vendor",
     desc: "Run sessions & coaching",
-    href: "/for-providers/host",
+    href: "/services/vendor",
     icon: Dices,
   },
   {
-    title: "Partner With Clan B",
+    title: "Partner with Clan B",
     desc: "Vendors, organizers & corporates",
-    href: "/for-providers/partner",
+    href: "/services/partner",
     icon: Handshake,
   },
   {
     title: "List Your Venue",
     desc: "Monetize tables, courts & rooms",
-    href: "/for-providers/venues",
+    href: "/services/list-venue",
     icon: Building2,
   },
   {
@@ -63,11 +56,6 @@ export function SiteHeader() {
   const [providerDropdownOpen, setProviderDropdownOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileProviderOpen, setMobileProviderOpen] = useState(false);
-  const session = useSession();
-  const account =
-    session.status === "signed-in"
-      ? { href: "/me", label: "My Clan B" }
-      : { href: `/login?next=${encodeURIComponent(pathname)}`, label: "Log in" };
 
   // Passive scroll listener
   useEffect(() => {
@@ -145,7 +133,7 @@ export function SiteHeader() {
                 );
               })}
 
-              {/* For Providers Dropdown */}
+              {/* Services Dropdown */}
               <div
                 className="relative"
                 onMouseEnter={() => setProviderDropdownOpen(true)}
@@ -155,13 +143,13 @@ export function SiteHeader() {
                   type="button"
                   className={cn(
                     "flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-white",
-                    pathname.startsWith("/for-providers")
+                    pathname.startsWith("/services") || pathname === "/contact"
                       ? "text-white font-semibold"
                       : "text-white/70"
                   )}
                   aria-expanded={providerDropdownOpen}
                 >
-                  <span>For Providers</span>
+                  <span>Services</span>
                   <ChevronDown
                     className={cn(
                       "h-3.5 w-3.5 transition-transform duration-200",
@@ -181,7 +169,7 @@ export function SiteHeader() {
                 >
                   <div className="max-h-[min(70vh,420px)] overflow-y-auto rounded-2xl border border-white/10 bg-ink-soft/95 p-3 shadow-2xl backdrop-blur-xl">
                     <div className="space-y-1">
-                      {PROVIDER_LINKS.map((item) => {
+                      {SERVICE_LINKS.map((item) => {
                         const Icon = item.icon;
                         return (
                           <Link
@@ -223,19 +211,14 @@ export function SiteHeader() {
               </kbd>
             </button>
 
-            {/* Log in */}
-            <Button href={account.href} variant="ghost" className="px-4 py-2 text-xs">
-              {account.label}
-            </Button>
-
-            {/* Host an Event */}
+            {/* Explore Venues */}
             <Button
-              href="/for-providers"
+              href="/venues"
               variant="primary"
               withArrow
               className="px-4 py-2 text-xs"
             >
-              Host an Event
+              Explore Venues
             </Button>
           </div>
 
@@ -280,13 +263,13 @@ export function SiteHeader() {
                   </Link>
                 ))}
 
-                {/* For Providers Accordion */}
+                {/* Services Accordion */}
                 <div className="rounded-xl border border-white/10 bg-white/[0.02]">
                   <button
                     onClick={() => setMobileProviderOpen((prev) => !prev)}
                     className="flex w-full items-center justify-between px-4 py-3 text-base font-medium text-white"
                   >
-                    <span>For Providers</span>
+                    <span>Services</span>
                     <ChevronDown
                       className={cn(
                         "h-4 w-4 text-zinc-400 transition-transform duration-200",
@@ -297,7 +280,7 @@ export function SiteHeader() {
 
                   {mobileProviderOpen && (
                     <div className="border-t border-white/10 px-4 py-2 space-y-1">
-                      {PROVIDER_LINKS.map((item) => (
+                      {SERVICE_LINKS.map((item) => (
                         <Link
                           key={item.href}
                           href={item.href}
@@ -329,17 +312,14 @@ export function SiteHeader() {
               </nav>
 
               <div className="border-t border-white/10 pt-4 flex flex-col gap-3">
-                <Button href={account.href} variant="ghost" className="w-full justify-center" onClick={closeMobileNavigation}>
-                  {account.label}
-                </Button>
                 <Button
-                  href="/for-providers"
+                  href="/venues"
                   variant="primary"
                   withArrow
                   className="w-full justify-center"
                   onClick={closeMobileNavigation}
                 >
-                  Host an Event
+                  Explore Venues
                 </Button>
               </div>
             </div>

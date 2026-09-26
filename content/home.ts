@@ -6,11 +6,11 @@ export const HOME_CONTENT = {
     sub: "Board games and sports, discovered, booked and hosted in one place — for players who want a table tonight and for the vendors, venues and organizers who make it happen.",
     primaryCta: {
       label: "Explore Clan B",
-      href: "/play",
+      href: "/venues",
     },
     secondaryCta: {
-      label: "Host with Clan B",
-      href: "/for-providers",
+      label: "Become a Vendor",
+      href: "/services/vendor",
     },
     tagline: "PLAY · HOST · RUN",
   },
@@ -135,35 +135,52 @@ export const HOME_CONTENT = {
 
   // S5 — Host / Space / Events: HostStack (FRD 03, 04, 05, 10)
   hostStack: {
-    eyebrow: "For Providers",
-    headline: "Four ways to run it.",
+    eyebrow: "Services",
+    headline: "Four ways to work with Clan B.",
     link: {
-      label: "Partner with Clan B →",
-      href: "/for-providers",
+      label: "All services →",
+      href: "/services",
     },
     cards: [
       {
-        id: "host",
-        tag: "01 — Host",
+        id: "vendor",
+        tag: "01 — Vendor",
         accent: "#5CF111",
-        title: "Host a Session",
+        title: "Become a Vendor",
         description:
-          "Launch board-game nights, coaching and open sessions with capacity, pricing, rules and a cancellation policy — without the group-chat chaos.",
+          "Run board-game nights, coaching and open sessions with capacity, pricing, rules and a cancellation policy — without the group-chat chaos.",
         capabilities: [
           "Session builder",
           "Capacity & waitlist",
           "Participant messaging",
           "Payouts & reconciliation",
         ],
-        ctaLabel: "Host a Session",
-        ctaHref: "/for-providers/host",
+        ctaLabel: "Become a Vendor",
+        ctaHref: "/services/vendor",
         visualType: "console",
       },
       {
+        id: "partner",
+        tag: "02 — Partner",
+        accent: "#34D399",
+        title: "Partner with Clan B",
+        description:
+          "Vendors, organizers, corporates and academies — bring your business onto Clan B and run official game nights, playdays and leagues with us.",
+        capabilities: [
+          "Co-hosted events",
+          "Corporate & group playdays",
+          "Managed operations",
+          "Verified partner badge",
+        ],
+        ctaLabel: "Partner with Clan B",
+        ctaHref: "/services/partner",
+        visualType: "mobile",
+      },
+      {
         id: "venues",
-        tag: "02 — Space",
+        tag: "03 — Space",
         accent: "#06B6D4",
-        title: "List Your Space",
+        title: "List Your Venue",
         description:
           "Turn empty tables, courts, rooms and pods into bookable inventory with opening hours, blackout windows and booking rules.",
         capabilities: [
@@ -172,17 +189,17 @@ export const HOME_CONTENT = {
           "Auto-confirm rules",
           "Occupancy view",
         ],
-        ctaLabel: "List Your Space",
-        ctaHref: "/for-providers/venues",
+        ctaLabel: "List Your Venue",
+        ctaHref: "/services/list-venue",
         visualType: "slots",
       },
       {
         id: "organizers",
-        tag: "03 — Compete",
+        tag: "04 — Compete",
         accent: "#D97706",
-        title: "Run Tournaments",
+        title: "Organize a Tournament",
         description:
-          "Set up leagues and knockouts with registrations, brackets, scoring and standings — all from one organizer workspace.",
+          "Set up leagues and knockouts with registrations, brackets, scoring and standings — tell us what you want to run and we'll set it up with you.",
         capabilities: [
           "Registrations",
           "Brackets & seeding",
@@ -190,25 +207,8 @@ export const HOME_CONTENT = {
           "Live standings",
         ],
         ctaLabel: "Organize a Tournament",
-        ctaHref: "/for-providers/partner",
+        ctaHref: "/services/partner?type=Organizer",
         visualType: "metrics",
-      },
-      {
-        id: "clanb-events",
-        tag: "04 — Official",
-        accent: "#34D399",
-        title: "Clan B Events",
-        description:
-          "Clan B also hosts and operates official game nights, tournaments and corporate playdays — end to end, with verified hosts.",
-        capabilities: [
-          "Official events",
-          "Corporate & group playdays",
-          "Managed operations",
-          "Verified hosts",
-        ],
-        ctaLabel: "See Clan B Events",
-        ctaHref: "/events?host=clanb",
-        visualType: "mobile",
       },
     ],
   },
@@ -601,7 +601,7 @@ export const HOME_CONTENT = {
     },
     secondaryBtn: {
       label: "Become a Partner",
-      href: "/for-providers",
+      href: "/services/partner",
     },
     contact: {
       email: "hello@clanb.in",
@@ -626,9 +626,10 @@ export const HOME_CONTENT = {
       {
         title: "For business",
         links: [
-          { label: "Become a Host", href: "/for-providers/host" },
-          { label: "Partner With Clan B", href: "/for-providers/partner" },
-          { label: "List Your Venue", href: "/for-providers/venues" },
+          { label: "Become a Vendor", href: "/services/vendor" },
+          { label: "Partner with Clan B", href: "/services/partner" },
+          { label: "List Your Venue", href: "/services/list-venue" },
+          { label: "Organize a Tournament", href: "/services/partner?type=Organizer" },
         ],
       },
       {
@@ -637,7 +638,7 @@ export const HOME_CONTENT = {
           { label: "About", href: "/about" },
           { label: "Contact", href: "/contact" },
           { label: "Careers", href: "/about#careers" },
-          { label: "Partner with Us", href: "/for-providers" },
+          { label: "Services", href: "/services" },
         ],
       },
       {
@@ -662,11 +663,7 @@ export const HOME_CONTENT = {
       },
     ],
     chapters: [
-      { label: "Play", href: "/#play" },
-      { label: "Host", href: "/#host" },
-      { label: "Sports", href: "/#sports" },
-      { label: "Games", href: "/#games" },
-      { label: "Community", href: "/#community" },
+      { label: "Services", href: "/#host" },
       { label: "Trust", href: "/#trust" },
     ],
     copyright: "© 2026 CLANB TECH SOLUTIONS PRIVATE LIMITED. All rights reserved.",

@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Clock, Gauge, MapPin, Users } from "lucide-react";
-import { SaveButton } from "@/components/account/SaveButton";
 import { InteriorPageLayout } from "@/components/interior/InteriorPageLayout";
 import { PageHero } from "@/components/interior/PageHero";
 import { CinematicSection } from "@/components/motion/CinematicSection";
@@ -63,7 +62,6 @@ export default async function GameDetailPage({ params }: PageProps) {
         title={activity.name}
         sub={guide?.overview}
         breadcrumbs={[{ label: "Games", href: "/games" }, { label: activity.name }]}
-        badge={<SaveButton item={{ kind: "game", slug: activity.slug, title: activity.name }} />}
       >
         {moods.length > 0 && (
           <ul className="flex flex-wrap gap-2">

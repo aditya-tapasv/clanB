@@ -6,9 +6,9 @@
 > **2026-09-25 pivot:** the product owner decided the site does not need the booking journey or provider workspace for this demo. The "For Providers" section (marketing pages, apply wizard) and the entire `/provider` dashboard were replaced with four lead-capture forms — Become a Host, Partner With Clan B, List Your Venue, Contact Us — that read as the core of the site for now. Phase 6 (Booking journey), Phase 7 (For Providers) and Phase 8 (Provider workspace) below are **superseded**; their code for Phase 7/8 was deleted, Phase 6 (`/checkout`, `/me`, login) was left in place but is no longer the focus. See the Decisions log.
 
 ## Current focus
-- **Phase:** Pivoted — lead-capture forms are the current core (see 2026-09-25 pivot note above)
-- **Next task:** Backend for the 4 lead forms (Google Sheets endpoint) when ready — see `lib/leads.ts` / `NEXT_PUBLIC_LEADS_ENDPOINT` in README
-- **Last updated:** 2026-09-25 · Claude Code (Sonnet 5)
+- **Phase:** Final frontend edits done (2026-09-27) — no accounts, "Services" forms, trimmed homepage, NestJS-ready API layer on dummy data
+- **Next task:** Build the NestJS backend per `docs/BACKEND_NESTJS.md`, then uncomment the "Real API" blocks in `lib/api/*`
+- **Last updated:** 2026-09-27 · Claude Code (Opus 5.5)
 
 ## Progress summary
 | Phase | Tasks | Done |
@@ -252,3 +252,26 @@
 | Date | Tool / model | Tasks | Notes |
 |---|---|---|---|
 | 2026-09-25 | Claude Code (Sonnet 5) | Lead-capture pivot | Deleted `/for-providers/[type]`, `/for-providers/apply`, `/provider/*`, `/providers/[slug]` and their components/content. Built `lib/leads.ts`, `content/leadForms.ts`, `components/leads/*` (BecomeHostForm, PartnerForm, ListVenueForm, ContactForm + shared LeadSuccess/CheckboxGroup), and 5 routes. Fixed every cross-reference: header dropdown, footer, home `hostStack` CTA, sitemap, robots, search, e2e specs, screenshot script, README. `pnpm typecheck && pnpm lint && pnpm build` clean (125 pages). Browser-tested all 4 forms end to end (validation + success + reference code) and confirmed old routes now 404 cleanly instead of crashing. |
+
+## Decisions log — 2026-09-27 final frontend edits
+
+| Area | Decision | Why |
+|---|---|---|
+| Auth | Removed login/signup/My Clan B (`/login`, `/signup`, `/me`, `lib/auth.ts`, `components/auth`, `components/account`) and saves/follows (`lib/saved.ts`, whose only view was My Clan B). Checkout books as a guest. Old URLs redirect to `/`. | Product owner: "remove login or any such auth — it's not needed". |
+| Naming & routes | "For Providers" → **Services**: `/services`, `/services/vendor` (Become a Vendor), `/services/partner`, `/services/list-venue`, `/contact`. `next.config.ts` 308-redirects every old `/for-providers/*` URL. | Product owner rename; keeps shared links working. |
+| Header | Only **Venues** + **Services ▾** (Become a Vendor · Partner with Clan B · List Your Venue · Contact Us); "Host an Event" → **Explore Venues** → `/venues`. | Instruction: remove Play/Events/Sports/Games from the header. |
+| Hero CTAs | "Explore Clan B" → `/venues`; "Host with Clan B" → **Become a Vendor** → `/services/vendor`. | Instruction. |
+| Homepage | Removed PlayRunway, SportsPulse, GamesMood, Intelligence, Community (components deleted). HostStack is now **Services** with 4 cards: Become a Vendor, Partner with Clan B, List Your Venue, Organize a Tournament (→ partner form, `?type=Organizer` preselected). Trust + footer unchanged; footer "Chapters" trimmed to sections that still exist. | Instruction: remove Play … till Community; keep Trust onwards. |
+| Contact Us | Fields are exactly **Name + Query**; submit opens a confirmation popup ("Query received! …"). Routed to **admin**. | Instruction. |
+| Partner enquiries | Routed to **aditya.gopal.pandey@gmail.com** — as backend config (`PARTNER_INBOX_EMAIL`), never sent from the browser (prevents an open mail relay). | Instruction + security. |
+| Venues | `/venues` paginated (6 per page) via `getVenues()`; filters reset to page 1. | Instruction. |
+| Backend prep | `lib/api/` (config, http, types, venues, contact, partners, vendors, venueListings): every real `fetch` written but **commented out**, dummy data live. Contract + NestJS module layout in `docs/BACKEND_NESTJS.md`. Replaced `lib/leads.ts`. | Instruction. |
+| Logo | Tiles now render seamless (`vector-effect="non-scaling-stroke"` hairline in each tile's own colour) — the seams made it look pixelated. Applied to all 4 logo SVGs. | Instruction: "clean look instead of pixelated". |
+| Hero | Blue pixels/particles/glow → white (lime + white only). The tile-built "b" had an extra tile beside the top of its stem that the logo doesn't have — removed, and the "b" retraced from the logo. | Instruction. |
+| Fonts | Self-hosted (`next/font/local`, `app/fonts/*.woff2`) instead of `next/font/google`. | 2 of 3 builds here failed downloading Google Fonts; builds now need no network. |
+| Bug fixed | Event/venue pages still linked to `/providers/[slug]` (deleted in the 2026-09-25 pivot) → 404 prefetches. Now plain text. | Found by the e2e suite. |
+
+## Session log — 2026-09-27
+| Date | Tool / model | Tasks | Notes |
+|---|---|---|---|
+| 2026-09-27 | Claude Code (Opus 5.5) | Final frontend edits | All items above. typecheck/lint/build clean (122 pages, no network needed). Playwright 86 passed / 0 failed. Link crawl: 150 pages, no broken links. Browser-checked header, dropdown, hero, logo, tile "b", contact popup, pagination, partner email routing (mock log), guest checkout. |

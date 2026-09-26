@@ -3,18 +3,16 @@
 import React, { useState } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { track } from "@/lib/analytics";
-import { useSession } from "@/lib/auth";
 import { isBookingError, repo } from "@/lib/data/repo";
 
 /** Join a session's waitlist (USR-09); position comes from the repo. */
 export function WaitlistForm({ sessionId }: { sessionId: string }) {
-  const session = useSession();
   const [email, setEmail] = useState("");
   const [position, setPosition] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const value = email || (session.status === "signed-in" ? session.user.email : "");
+  const value = email;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();

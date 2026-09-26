@@ -6,13 +6,13 @@ import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Button } from "@/components/ui/Button";
-import { HOST_FORM } from "@/content/leadForms";
-import { submitLead } from "@/lib/leads";
+import { VENDOR_FORM } from "@/content/leadForms";
+import { applyAsVendor } from "@/lib/api/vendors";
 import { track } from "@/lib/analytics";
 import { LeadSuccess } from "./LeadSuccess";
 import { EMAIL_PATTERN, PHONE_PATTERN } from "./validators";
 
-interface HostValues {
+interface VendorValues {
   name: string;
   email: string;
   phone: string;
@@ -23,28 +23,35 @@ interface HostValues {
   message: string;
 }
 
-const EMPTY: HostValues = { name: "", email: "", phone: "", city: "", gameType: "", experience: "", venueAvailable: "", message: "" };
+const EMPTY: VendorValues = { name: "", email: "", phone: "", city: "", gameType: "", experience: "", venueAvailable: "", message: "" };
 
-export function BecomeHostForm() {
+export function BecomeVendorForm() {
   const [reference, setReference] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<HostValues>({ defaultValues: EMPTY });
+  } = useForm<VendorValues>({ defaultValues: EMPTY });
 
-  const onSubmit = async (values: HostValues) => {
-    const { reference } = await submitLead("host", { ...values });
-    track("lead_form_submit", { form: "host" });
-    setReference(reference);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const onSubmit = async (values: VendorValues) => {
+    setSubmitError(null);
+    try {
+      const { reference } = await applyAsVendor(values);
+      track("lead_form_submit", { form: "vendor" });
+      setReference(reference);
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Couldn't submit right now. Please try again.");
+    }
   };
 
   if (reference) {
     return (
       <LeadSuccess
-        heading={HOST_FORM.successHeading}
-        body={HOST_FORM.successBody}
+        heading={VENDOR_FORM.successHeading}
+        body={VENDOR_FORM.successBody}
         reference={reference}
         resetLabel="Submit another application"
         onReset={() => {
@@ -102,7 +109,7 @@ export function BecomeHostForm() {
             <option value="" disabled>
               Select an option
             </option>
-            {HOST_FORM.gameTypes.map((g) => (
+            {VENDOR_FORM.gameTypes.map((g) => (
               <option key={g} value={g}>
                 {g}
               </option>
@@ -117,7 +124,7 @@ export function BecomeHostForm() {
             <option value="" disabled>
               Select an option
             </option>
-            {HOST_FORM.experience.map((e) => (
+            {VENDOR_FORM.experience.map((e) => (
               <option key={e} value={e}>
                 {e}
               </option>
@@ -137,7 +144,7 @@ export function BecomeHostForm() {
             <option value="" disabled>
               Select an option
             </option>
-            {HOST_FORM.venueAvailable.map((v) => (
+            {VENDOR_FORM.venueAvailable.map((v) => (
               <option key={v} value={v}>
                 {v}
               </option>
@@ -158,6 +165,12 @@ export function BecomeHostForm() {
           {...register("message")}
         />
       </div>
+
+      {submitError && (
+        <p role="alert" className="text-sm text-rose-400">
+          {submitError}
+        </p>
+      )}
 
       <Button type="submit" variant="primary" disabled={isSubmitting} className="w-full sm:w-auto">
         {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}

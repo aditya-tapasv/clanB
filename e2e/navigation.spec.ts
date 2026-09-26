@@ -1,12 +1,7 @@
 import { test, expect, isMobile } from "./fixtures";
 
-// FRD §26.1 #1 — from the landing page a visitor reaches every major area.
-const DESTINATIONS = [
-  { label: "Play", path: "/play" },
-  { label: "Events", path: "/events" },
-  { label: "Sports", path: "/sports" },
-  { label: "Games", path: "/games" },
-];
+// From the landing page a visitor reaches every area in the header.
+const DESTINATIONS = [{ label: "Venues", path: "/venues" }];
 
 test.describe("landing navigation", () => {
   for (const d of DESTINATIONS) {
@@ -23,11 +18,26 @@ test.describe("landing navigation", () => {
     });
   }
 
-  test("reaches For Providers and the Become a Host form", async ({ page }) => {
-    await page.goto("/for-providers");
-    await page.getByRole("link", { name: "Become a Host" }).first().click();
-    await expect(page).toHaveURL(/\/for-providers\/host/);
-    await expect(page.getByRole("heading", { name: "Run games people show up for" })).toBeVisible();
+  test("Services dropdown reaches all four forms", async ({ page }, info) => {
+    test.skip(isMobile(info.project.name), "desktop hover menu");
+    for (const [label, path] of [
+      ["Become a Vendor", "/services/vendor"],
+      ["Partner with Clan B", "/services/partner"],
+      ["List Your Venue", "/services/list-venue"],
+      ["Contact Us", "/contact"],
+    ] as const) {
+      await page.goto("/");
+      await page.getByRole("button", { name: "Services" }).hover();
+      await page.getByRole("link", { name: new RegExp(label) }).first().click();
+      await expect(page).toHaveURL(new RegExp(`${path}$`));
+    }
+  });
+
+  test("old provider and account URLs redirect", async ({ page }) => {
+    await page.goto("/for-providers/host");
+    await expect(page).toHaveURL(/\/services\/vendor$/);
+    await page.goto("/login");
+    await expect(page).toHaveURL(/\/$/);
   });
 
   test("unknown URLs show the branded 404", async ({ page }) => {

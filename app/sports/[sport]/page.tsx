@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CheckCircle2, Clock, MapPin, Users } from "lucide-react";
-import { SaveButton } from "@/components/account/SaveButton";
 import { InteriorPageLayout } from "@/components/interior/InteriorPageLayout";
 import { PageHero } from "@/components/interior/PageHero";
 import { CinematicSection } from "@/components/motion/CinematicSection";
@@ -63,7 +62,6 @@ export default async function SportDetailPage({ params }: PageProps) {
         breadcrumbs={[{ label: "Sports", href: "/sports" }, { label: activity.name }]}
         badge={
           <>
-            <SaveButton item={{ kind: "sport", slug: activity.slug, title: activity.name }} />
             {feed.some((f) => f.kind === "live") && (
               <Badge variant="signal" ping>
                 Live now
