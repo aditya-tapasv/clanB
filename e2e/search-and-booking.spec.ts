@@ -9,15 +9,26 @@ test("search page finds an event and opens it", async ({ page }) => {
   await expect(page).toHaveURL(/\/events\/friday-catan-social-kora/);
 });
 
-test("command palette search is keyboard-usable", async ({ page }, info) => {
-  test.skip(info.project.name.includes("mobile"), "palette shortcut is a desktop affordance");
-  await page.goto("/games");
-  await page.getByRole("button", { name: "Search games, venues, events" }).click();
-  const input = page.getByRole("combobox", { name: /Search games/ });
-  await input.fill("wingspan");
-  await expect(page.getByRole("option", { name: /Wingspan/ }).first()).toBeVisible();
-  await input.press("Enter");
-  await expect(page).toHaveURL(/\/(games\/wingspan|events\/)/);
+test("OTP login routes each role to its own area", async ({ page }) => {
+  for (const [email, home] of [
+    ["admin@clanb.in", /\/admin$/],
+    ["vendor@clanb.in", /\/vendor$/],
+    ["player@example.com", /\/account$/],
+  ] as const) {
+    await page.goto("/login");
+    await page.getByRole("button", { name: "Email" }).click();
+    await page.getByLabel("Email address").fill(email);
+    await page.getByRole("button", { name: "Send OTP" }).click();
+    await page.getByLabel("Enter the 6-digit code").fill("123456");
+    await page.getByRole("button", { name: /Verify & log in/ }).click();
+    await expect(page).toHaveURL(home);
+    // A player can't open the admin area.
+    if (email === "player@example.com") {
+      await page.goto("/admin");
+      await expect(page).toHaveURL(/\/account$/);
+    }
+    await page.context().clearCookies();
+  }
 });
 
 test("book a seat as a guest: hold → pay → QR", async ({ page }) => {

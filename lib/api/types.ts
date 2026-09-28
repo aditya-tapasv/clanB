@@ -66,3 +66,33 @@ export interface VenueQuery {
   query?: string;
   neighbourhood?: string;
 }
+
+// ── Admin & portals ───────────────────────────────────────────────────────────
+
+export type ReviewStatus = "pending" | "approved" | "rejected";
+export type QueryStatus = "open" | "resolved";
+
+/** A stored form submission as the admin sees it. */
+export type AdminRecord<T, S extends string = ReviewStatus> = T & Omit<SubmissionReceipt, "status"> & { status: S };
+
+export type AdminVendorApplication = AdminRecord<VendorApplicationInput>;
+export type AdminPartnerEnquiry = AdminRecord<PartnerEnquiryInput>;
+export type AdminVenueListing = AdminRecord<VenueListingInput>;
+export type AdminContactQuery = AdminRecord<ContactQueryInput, QueryStatus>;
+
+export interface AdminUser {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  role: "admin" | "vendor" | "user";
+  joinedAt: string;
+}
+
+export interface AdminStats {
+  pendingVendors: number;
+  newPartnerEnquiries: number;
+  pendingVenueListings: number;
+  openQueries: number;
+  totalUsers: number;
+}

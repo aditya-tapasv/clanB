@@ -22,6 +22,8 @@ export default defineConfig({
     command: `pnpm start -p ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: true,
+    // Login needs a session secret in production mode; this one is for local tests only.
+    env: { SESSION_SECRET: "e2e-only-session-secret-not-for-production-0123456789" },
     timeout: 120_000,
   },
   projects: [

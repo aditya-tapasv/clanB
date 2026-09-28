@@ -10,7 +10,7 @@ import { VENDOR_FORM } from "@/content/leadForms";
 import { applyAsVendor } from "@/lib/api/vendors";
 import { track } from "@/lib/analytics";
 import { LeadSuccess } from "./LeadSuccess";
-import { EMAIL_PATTERN, PHONE_PATTERN } from "./validators";
+import { EMAIL_PATTERN, PHONE_PATTERN } from "@/lib/validators";
 
 interface VendorValues {
   name: string;

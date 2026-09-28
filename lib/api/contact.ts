@@ -6,6 +6,7 @@
 // import { apiFetch } from "./http";
 import { MAIL_ROUTING } from "./config";
 import { logMock, mockLatency, mockReceipt } from "./mock";
+import { mockStore } from "./mockStore";
 import type { ContactQueryInput, SubmissionReceipt } from "./types";
 
 export async function submitContactQuery(input: ContactQueryInput): Promise<SubmissionReceipt> {
@@ -18,5 +19,7 @@ export async function submitContactQuery(input: ContactQueryInput): Promise<Subm
   // ── Dummy data (current) ────────────────────────────────────────────────────
   await mockLatency();
   logMock(`POST /contact → ${MAIL_ROUTING.contact}`, input);
-  return mockReceipt("MSG");
+  const receipt = mockReceipt("MSG");
+  mockStore.queries.unshift({ ...input, ...receipt, status: "open" });
+  return receipt;
 }

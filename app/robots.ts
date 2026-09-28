@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
       // Private or per-user pages; they also send noindex.
-      disallow: ["/checkout/", "/search", "/lab"],
+      disallow: ["/checkout/", "/search", "/login", "/account", "/admin", "/vendor", "/api/"],
     },
     sitemap: absoluteUrl("/sitemap.xml"),
   };

@@ -2,13 +2,13 @@
 
 > **Status legend:** `[ ]` todo · `[~]` in progress · `[x]` done (acceptance met) · `[!]` blocked (give the reason)
 > Any AI must update this file after every task. It is the memory of the project; chat history is not.
-> Spec: `MASTER_PROMPT.md` (§ numbers below; the repo was moved from `clanb-site-kit/` to the repo root on 2026-09-24 so Vercel builds it with default settings). Motion reference IDs A01–A50: `docs/reference/mash-motion-forensics.md`.
+> Spec: `docs/CLANB_MASTER_SPEC.md` (the original `MASTER_PROMPT.md` § numbers below are in git history; the repo was moved from `clanb-site-kit/` to the repo root on 2026-09-24 so Vercel builds it with default settings). Motion reference IDs A01–A50: `docs/reference/mash-motion-forensics.md`.
 > **2026-09-25 pivot:** the product owner decided the site does not need the booking journey or provider workspace for this demo. The "For Providers" section (marketing pages, apply wizard) and the entire `/provider` dashboard were replaced with four lead-capture forms — Become a Host, Partner With Clan B, List Your Venue, Contact Us — that read as the core of the site for now. Phase 6 (Booking journey), Phase 7 (For Providers) and Phase 8 (Provider workspace) below are **superseded**; their code for Phase 7/8 was deleted, Phase 6 (`/checkout`, `/me`, login) was left in place but is no longer the focus. See the Decisions log.
 
 ## Current focus
-- **Phase:** Final frontend edits done (2026-09-27) — no accounts, "Services" forms, trimmed homepage, NestJS-ready API layer on dummy data
-- **Next task:** Build the NestJS backend per `docs/BACKEND_NESTJS.md`, then uncomment the "Real API" blocks in `lib/api/*`
-- **Last updated:** 2026-09-27 · Claude Code (Opus 5.5)
+- **Phase:** OTP login + role areas (admin / vendor / player) + codebase cleanup done (2026-09-28), all on mock data
+- **Next task:** Connect the owner's existing admin backend (map its endpoints into `lib/api/*` + `lib/auth/backend.ts`), then set `SESSION_SECRET` on Vercel
+- **Last updated:** 2026-09-28 · Claude Code (Opus 5.5)
 
 ## Progress summary
 | Phase | Tasks | Done |
@@ -275,3 +275,15 @@
 | Date | Tool / model | Tasks | Notes |
 |---|---|---|---|
 | 2026-09-27 | Claude Code (Opus 5.5) | Final frontend edits | All items above. typecheck/lint/build clean (122 pages, no network needed). Playwright 86 passed / 0 failed. Link crawl: 150 pages, no broken links. Browser-checked header, dropdown, hero, logo, tile "b", contact popup, pagination, partner email routing (mock log), guest checkout. |
+
+## Decisions log — 2026-09-28 login, roles, cleanup
+- Hero "b" restored to a tall-stem glyph (stem rows -4..3, open-corner bowl), with a clear halo of no random lit tiles around it; still no accent tile above the stem.
+- Header: the search pill and ⌘K palette were replaced by **Login / Register** (or an account menu when signed in). The italic tagline "The future of games." sits under the logo on the homepage.
+- **OTP auth** (phone or email, no passwords), handled by the Next.js route handlers `app/api/auth/*`. The session is an httpOnly HS256 JWT cookie (`jose`, `SESSION_SECRET`, required in production). `proxy.ts` routes by role: admin → /admin, vendor → /vendor, player → /account. The role comes from the backend; in mock mode it comes from `ADMIN_EMAILS` / `VENDOR_IDENTIFIERS`.
+- New areas: `/admin` (overview, 4 review queues, users & roles), `/vendor` (overview, sessions, bookings & check-in) and `/account`. All data goes through `lib/api/{admin,vendorPortal,account}.ts`, with real calls commented and the mock active. The authenticated pass-through `/api/backend/*` attaches the backend token server-side.
+- RLS/guards contract: `docs/AUTH_RBAC.md`.
+- Cleanup: removed `/lab`, `SearchCommandPalette`, the unused ui components (Card, Panel, Sheet, Skeleton), duplicate `brand/`, `docs/screenshots`, `scripts/`, `MASTER_PROMPT.md` (superseded by `docs/CLANB_MASTER_SPEC.md`), and the unused homepage copy blocks. Moved validators to `lib/validators.ts`.
+
+## Session log — 2026-09-28
+- typecheck, lint and build are clean. Browser-verified: the b glyph, the header tagline, OTP login (admin → /admin; vendor → /vendor; player → /account; player blocked from /admin), admin approve, and the vendor dashboard.
+- Open: connect the owner's existing admin backend. Waiting for its repo/path.

@@ -5,7 +5,7 @@ export interface LegalDoc {
   sections: { heading: string; body: string }[];
 }
 
-/** Every legal page is a placeholder until counsel signs off (MASTER_PROMPT §10). */
+/** Every legal page is a placeholder until counsel signs off (pending legal review). */
 export const LEGAL_REVIEW_NOTE = "TODO legal review — placeholder text, not legal advice and not yet in force.";
 export const LEGAL_LAST_UPDATED = "24 September 2026";
 

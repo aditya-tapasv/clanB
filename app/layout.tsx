@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { display, body, mono } from "./fonts";
 import "./globals.css";
+import { SessionProvider } from "@/components/auth/SessionProvider";
 import { SITE_URL, jsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
 export const viewport: Viewport = {
@@ -39,7 +40,7 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        {children}
+        <SessionProvider>{children}</SessionProvider>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: jsonLd([organizationJsonLd(), websiteJsonLd()]) }}

@@ -10,7 +10,7 @@ import { submitVenueListing } from "@/lib/api/venueListings";
 import { track } from "@/lib/analytics";
 import { LeadSuccess } from "./LeadSuccess";
 import { CheckboxGroup } from "./CheckboxGroup";
-import { EMAIL_PATTERN, PHONE_PATTERN } from "./validators";
+import { EMAIL_PATTERN, PHONE_PATTERN } from "@/lib/validators";
 
 interface VenueValues {
   venueName: string;

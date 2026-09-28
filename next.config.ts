@@ -1,8 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Old URLs from earlier builds keep working after the "For Providers" → "Services" rename
-  // and the removal of accounts/login.
+  // Old URLs from earlier builds keep working after the "For Providers" → "Services" rename.
   async redirects() {
     return [
       { source: "/for-providers", destination: "/services", permanent: true },
@@ -10,9 +9,9 @@ const nextConfig: NextConfig = {
       { source: "/for-providers/partner", destination: "/services/partner", permanent: true },
       { source: "/for-providers/venues", destination: "/services/list-venue", permanent: true },
       { source: "/for-providers/:path*", destination: "/services", permanent: true },
-      { source: "/login", destination: "/", permanent: false },
-      { source: "/signup", destination: "/", permanent: false },
-      { source: "/me", destination: "/", permanent: false },
+      { source: "/signup", destination: "/login?mode=register", permanent: false },
+      { source: "/register", destination: "/login?mode=register", permanent: false },
+      { source: "/me", destination: "/account", permanent: false },
     ];
   },
 };

@@ -1,5 +1,7 @@
 # NestJS backend contract
 
+Login (OTP), roles and row-level security: see [AUTH_RBAC.md](AUTH_RBAC.md).
+
 The frontend's API calls live in `lib/api/`, one file per backend module. Each function contains the real `fetch` call **commented out** and currently returns **dummy data**. To switch a module on:
 
 1. Build the matching NestJS endpoint below.
@@ -17,9 +19,10 @@ DTO shapes are in `lib/api/types.ts`; mirror them as `class-validator` DTOs.
 | `submitContactQuery()` — `lib/api/contact.ts` | `POST /contact` | `{ name, query }` → `SubmissionReceipt` | **Goes to the admin**: store it for the admin dashboard and notify `ADMIN_INBOX_EMAIL`. |
 | `submitPartnerEnquiry()` — `lib/api/partners.ts` | `POST /partners` | `PartnerEnquiryInput` → `SubmissionReceipt` | **Emailed to `PARTNER_INBOX_EMAIL=aditya.gopal.pandey@gmail.com`**. |
 | `applyAsVendor()` — `lib/api/vendors.ts` | `POST /vendors` | `VendorApplicationInput` → `SubmissionReceipt` | "Become a Vendor". |
-| `listVendorApplications()` — `lib/api/vendors.ts` | `GET /vendors` | → `VendorApplication[]` | Admin only (JWT guard). |
+| `listVendorApplications()` / `setVendorStatus()` — `lib/api/admin.ts` | `GET /vendors`, `PATCH /vendors/:id` | → `AdminVendorApplication[]` | Admin only. Approving sets the applicant's role to `vendor`. |
 | `submitVenueListing()` — `lib/api/venueListings.ts` | `POST /venue-listings` | `VenueListingInput` → `SubmissionReceipt` | "List Your Venue". Approved listings become rows in `GET /venues`. |
-| `listVenueListings()` — `lib/api/venueListings.ts` | `GET /venue-listings` | → `VenueListing[]` | Admin only (JWT guard). |
+| `listVenueListings()` / `setVenueListingStatus()` — `lib/api/admin.ts` | `GET /venue-listings`, `PATCH /venue-listings/:id` | → `AdminVenueListing[]` | Admin only. |
+| Other admin, vendor and account endpoints, plus OTP auth | see [AUTH_RBAC.md](AUTH_RBAC.md) | | Called through `/api/backend/*` with the user's token. |
 
 `SubmissionReceipt` = `{ id, reference, receivedAt, status: "received" }`. The frontend shows `reference` to the user. Errors should use Nest's default body `{ statusCode, message, error }`; `lib/api/http.ts` shows `message` to the user.
 

@@ -1,15 +1,13 @@
 /**
  * List Your Venue — NestJS `VenueListingsModule`
  *   POST /venue-listings   VenueListingInput → SubmissionReceipt
- *   GET  /venue-listings   → VenueListing[]   (admin only; JWT guard on the backend)
+ * Admin review (GET /venue-listings, PATCH /venue-listings/:id) lives in lib/api/admin.ts.
  * Approved listings become rows served by GET /venues (see lib/api/venues.ts).
  */
 // import { apiFetch } from "./http";
 import { logMock, mockLatency, mockReceipt } from "./mock";
-import type { SubmissionReceipt, VenueListing, VenueListingInput } from "./types";
-
-/** Dummy store: what POST /venue-listings has "saved" in this browser tab. */
-const dummyListings: VenueListing[] = [];
+import { mockStore } from "./mockStore";
+import type { SubmissionReceipt, VenueListingInput } from "./types";
 
 export async function submitVenueListing(input: VenueListingInput): Promise<SubmissionReceipt> {
   // ── Real API ────────────────────────────────────────────────────────────────
@@ -21,18 +19,7 @@ export async function submitVenueListing(input: VenueListingInput): Promise<Subm
   // ── Dummy data (current) ────────────────────────────────────────────────────
   await mockLatency();
   const receipt = mockReceipt("VEN");
-  dummyListings.unshift({ ...input, ...receipt });
+  mockStore.venueListings.unshift({ ...input, ...receipt, status: "pending" });
   logMock("POST /venue-listings", input);
   return receipt;
-}
-
-export async function listVenueListings(): Promise<VenueListing[]> {
-  // ── Real API ────────────────────────────────────────────────────────────────
-  // return apiFetch<VenueListing[]>("/venue-listings", {
-  //   headers: { Authorization: `Bearer ${adminToken}` },
-  // });
-
-  // ── Dummy data (current) ────────────────────────────────────────────────────
-  await mockLatency(100, 250);
-  return [...dummyListings];
 }

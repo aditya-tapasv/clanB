@@ -7,7 +7,7 @@ import {
   Menu,
   X,
   ChevronDown,
-  Search,
+  LogIn,
   Dices,
   Building2,
   Handshake,
@@ -16,7 +16,9 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
-import { SearchCommandPalette } from "./SearchCommandPalette";
+import { AccountMenu, initials } from "@/components/auth/AccountMenu";
+import { useSession } from "@/components/auth/SessionProvider";
+import { ROLE_HOME } from "@/lib/auth/roles";
 import { cn } from "@/lib/cn";
 
 const NAV_LINKS = [{ label: "Venues", href: "/venues" }];
@@ -54,8 +56,8 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [providerDropdownOpen, setProviderDropdownOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [mobileProviderOpen, setMobileProviderOpen] = useState(false);
+  const { user, logout } = useSession();
 
   // Passive scroll listener
   useEffect(() => {
@@ -66,19 +68,6 @@ export function SiteHeader() {
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // ⌘K listener for search
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        setSearchOpen((prev) => !prev);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   // Lock body scroll when mobile menu is open
@@ -113,7 +102,15 @@ export function SiteHeader() {
         <div className="page-shell page-x flex h-[72px] items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-8">
-            <Logo height={24} />
+            {/* Logo + brand tagline (homepage only) */}
+            <div className="flex flex-col">
+              <Logo height={24} priority={isHome} />
+              {isHome && (
+                <span className="mt-1 pl-0.5 text-[10px] italic leading-none tracking-[0.08em] text-mist">
+                  The future of <span className="text-signal">games.</span>
+                </span>
+              )}
+            </div>
 
             {/* Desktop Navigation */}
             <nav aria-label="Primary" className="hidden items-center gap-6 lg:flex">
@@ -198,18 +195,7 @@ export function SiteHeader() {
 
           {/* Right Action Cluster */}
           <div className="hidden items-center gap-3 lg:flex">
-            {/* Search Pill */}
-            <button
-              onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 text-xs text-mist transition hover:border-white/30 hover:text-white"
-              aria-label="Search games, venues, events"
-            >
-              <Search className="h-3.5 w-3.5 text-signal" />
-              <span className="hidden xl:inline">Search games, venues...</span>
-              <kbd className="hidden rounded border border-white/20 bg-white/5 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400 xl:inline">
-                ⌘K
-              </kbd>
-            </button>
+            <AccountMenu />
 
             {/* Explore Venues */}
             <Button
@@ -222,15 +208,19 @@ export function SiteHeader() {
             </Button>
           </div>
 
-          {/* Mobile Right Controls: Search + Burger */}
+          {/* Mobile Right Controls: Account + Burger */}
           <div className="flex items-center gap-2 lg:hidden">
-            <button
-              onClick={() => setSearchOpen(true)}
-              aria-label="Search"
+            <Link
+              href={user ? ROLE_HOME[user.role] : "/login"}
+              aria-label={user ? "My account" : "Login or register"}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition hover:bg-white/10"
             >
-              <Search className="h-4 w-4 text-signal" />
-            </button>
+              {user ? (
+                <span className="font-mono text-xs font-bold text-signal">{initials(user.name)}</span>
+              ) : (
+                <LogIn className="h-4 w-4 text-signal" />
+              )}
+            </Link>
 
             <button
               onClick={() => setMobileMenuOpen((prev) => !prev)}
@@ -312,6 +302,20 @@ export function SiteHeader() {
               </nav>
 
               <div className="border-t border-white/10 pt-4 flex flex-col gap-3">
+                {user ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button href={ROLE_HOME[user.role]} variant="ghost" className="justify-center" onClick={closeMobileNavigation}>
+                      {user.role === "user" ? "My account" : "Dashboard"}
+                    </Button>
+                    <Button type="button" variant="ghost" className="justify-center" onClick={() => void logout()}>
+                      Log out
+                    </Button>
+                  </div>
+                ) : (
+                  <Button href="/login" variant="ghost" className="w-full justify-center" onClick={closeMobileNavigation}>
+                    Login / Register
+                  </Button>
+                )}
                 <Button
                   href="/venues"
                   variant="primary"
@@ -327,11 +331,6 @@ export function SiteHeader() {
         )}
       </header>
 
-      {/* Global Search Command Palette */}
-      <SearchCommandPalette
-        open={searchOpen}
-        onClose={() => setSearchOpen(false)}
-      />
     </>
   );
 }

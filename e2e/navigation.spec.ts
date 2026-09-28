@@ -33,11 +33,11 @@ test.describe("landing navigation", () => {
     }
   });
 
-  test("old provider and account URLs redirect", async ({ page }) => {
+  test("old provider URLs redirect; protected areas send guests to login", async ({ page }) => {
     await page.goto("/for-providers/host");
     await expect(page).toHaveURL(/\/services\/vendor$/);
-    await page.goto("/login");
-    await expect(page).toHaveURL(/\/$/);
+    await page.goto("/admin");
+    await expect(page).toHaveURL(/\/login\?next=%2Fadmin$/);
   });
 
   test("unknown URLs show the branded 404", async ({ page }) => {

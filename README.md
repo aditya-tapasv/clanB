@@ -1,10 +1,12 @@
 # Clan B — website
 
-The Clan B frontend: a cinematic homepage, a paginated venues directory, and the **Services** forms (Become a Vendor, Partner with Clan B, List Your Venue, Contact Us). There are no user accounts or logins. Next.js 16 (App Router), React 19, TypeScript strict, Tailwind v4, GSAP + Lenis, React Three Fiber.
+The Clan B frontend: a cinematic homepage, a paginated venues directory, and the **Services** forms (Become a Vendor, Partner with Clan B, List Your Venue, Contact Us), and **OTP login** (phone or email) with role-based areas: **Admin** dashboard, **Vendor** workspace and the **Player** account. Next.js 16 (App Router), React 19, TypeScript strict, Tailwind v4, GSAP + Lenis, React Three Fiber.
 
 The whole app runs on a **typed mock data layer**. The real NestJS backend replaces it by switching one environment variable (see [docs/API_SWAP.md](docs/API_SWAP.md)).
 
-- **Spec:** [`MASTER_PROMPT.md`](MASTER_PROMPT.md)
+- **Spec (as built):** [`docs/CLANB_MASTER_SPEC.md`](docs/CLANB_MASTER_SPEC.md)
+- **Login, roles, RLS:** [`docs/AUTH_RBAC.md`](docs/AUTH_RBAC.md)
+- **Backend contract:** [`docs/BACKEND_NESTJS.md`](docs/BACKEND_NESTJS.md)
 - **Status and decisions:** [`PROJECT_TRACKER.md`](PROJECT_TRACKER.md)
 - **Motion reference:** [`docs/reference/mash-motion-forensics.md`](docs/reference/mash-motion-forensics.md)
 
@@ -38,12 +40,14 @@ pnpm test:e2e       # ~2.5 min: navigation, search, booking, axe, reduced motion
 | `NEXT_PUBLIC_API_BASE_URL` | `https://api.clanb.in/v1` | Backend base URL when `DATA_SOURCE=api` |
 | `NEXT_PUBLIC_SITE_URL` | `https://clanb.in` | Canonical origin for the sitemap, robots, OG and JSON-LD |
 | `NEXT_PUBLIC_DEBUG_ANALYTICS` | — | `true` logs `track()` funnel events in dev |
+| `SESSION_SECRET` | dev-only fallback | **Required in production.** Signs the login cookie (32+ random chars) |
+| `ADMIN_EMAILS` / `VENDOR_IDENTIFIERS` / `MOCK_OTP_CODE` | `admin@clanb.in` / `vendor@clanb.in` / `123456` | Mock login only, until the NestJS AuthModule is live |
 | `NEXT_PUBLIC_API_BASE_URL` (forms & venues) | `http://localhost:4000/api` | NestJS base URL used by `lib/api/*`. Those calls are commented out and return dummy data until the backend is live — see [docs/BACKEND_NESTJS.md](docs/BACKEND_NESTJS.md) |
 
 ## Deploy to Vercel
 
 1. Import the repo. The app is at the repository root, so keep the default Root Directory. The framework preset should read **Next.js**.
-2. Environment variables: set `NEXT_PUBLIC_SITE_URL` to the production URL, and leave `NEXT_PUBLIC_DATA_SOURCE` unset (mock) until the API is live.
+2. Environment variables: set `NEXT_PUBLIC_SITE_URL` to the production URL and `SESSION_SECRET` to 32+ random characters (see `.env.example`). Leave `NEXT_PUBLIC_DATA_SOURCE` unset (mock) until the API is live.
 3. Add `ENABLE_EXPERIMENTAL_COREPACK=1` so Vercel uses the exact pnpm version pinned in `package.json`.
 4. Deploy. Nearly all pages are static (SSG). Only `/search`, `/checkout/[id]`, `/services/partner` (for `?type=`), `/games` (for `?mood=`) and `/events` (for `?host=`) render on demand.
 
@@ -56,14 +60,19 @@ What keeps the site from crashing in the wild:
 ## Structure
 
 ```
-app/                      routes (home, /venues, /services/*, /contact, other public pages, sitemap, robots, OG image)
+app/                      routes (home, /venues, /services/*, /contact, /login, /account, /admin/*, /vendor/*, other public pages)
+  api/auth/               OTP login route handlers (session cookie)
+  api/backend/            authenticated pass-through to NestJS
+proxy.ts                  role-based routing (admin / vendor / player)
 components/
   motion/                 SmoothScrollProvider, CinematicPage, CinematicSection, RevealHeadline, KineticText, Marquee
   hero/                   ArenaHero, ArenaCanvas (R3F), useLiquidLens, WebGLGuard
-  home/                   homepage sections (HostStack, Intelligence, Trust accept a `content` prop for reuse)
+  home/                   homepage sections (HostStack, Trust accept a `content` prop for reuse)
+  auth/                   SessionProvider, AccountMenu, OtpAuthForm
+  dashboard/ admin/ vendor/ account/   signed-in areas
   interior/               PageHero, InteriorPageLayout, StepGrid, FaqList
   discovery/ sports/      listing and detail building blocks
-  checkout/               guest booking journey (no accounts)
+  checkout/               guest booking journey
   leads/                  Become a Vendor / Partner / List Your Venue / Contact Us forms
   ui/                     Button, Badge, Tabs, Dialog, Sheet, Input, Select, …
 content/                  all page copy (edit copy here, not in components)
@@ -72,7 +81,8 @@ lib/
   data/repo.ts            ClanBRepo interface + mockRepo + apiRepo
   data/mock/              fixtures, bookingStore (localStorage-backed mock state)
   data/slots.ts           deterministic venue slot availability
-  api/                    NestJS API layer: venues, contact, partners, vendors, venue listings (real calls commented, dummy data live)
+  api/                    NestJS API layer: venues, forms, admin, vendor portal, account (real calls commented, dummy data live)
+  auth/                   roles, session token, OTP backend adapter
   format.ts               deterministic ₹ / IST formatting (hydration-safe)
   motion.ts seo.ts analytics.ts
 e2e/                      Playwright + axe specs

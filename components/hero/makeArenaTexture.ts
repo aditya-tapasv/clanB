@@ -62,6 +62,23 @@ export function makeArenaTexture(): THREE.CanvasTexture {
     return val - Math.floor(val);
   }
 
+  // 4. Oversized "b" glyph built from lit tiles, anchored at (68%, 52%): a tall ascender
+  //    (stem rows -4..3) and a 4×4 bowl with rounded (open) corners — reads as "b" at a glance.
+  //    No accent tile above the stem.
+  const centerX = Math.floor(cols * 0.68);
+  const centerY = Math.floor(rows * 0.52);
+  const bTiles = [
+    // Stem (ascender + bowl height)
+    [0, -4], [0, -3], [0, -2], [0, -1], [0, 0], [0, 1], [0, 2], [0, 3],
+    // Bowl: top bar, right side, bottom bar (corners left open so it looks rounded)
+    [1, 0], [2, 0],
+    [3, 1], [3, 2],
+    [1, 3], [2, 3],
+  ];
+  // Keep a one-tile halo around the glyph free of random lit tiles so the silhouette stays clean.
+  const inGlyphHalo = (c: number, r: number) =>
+    c >= centerX - 1 && c <= centerX + 4 && r >= centerY - 5 && r <= centerY + 4;
+
   // Draw base tiles
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
@@ -80,6 +97,8 @@ export function makeArenaTexture(): THREE.CanvasTexture {
       ctx.fillStyle = "rgba(11, 21, 18, 0.65)";
       drawRoundedRect(x, y, tileSize, tileSize, 4);
 
+      if (inGlyphHalo(c, r)) continue;
+
       // 9% lime tiles, 3% white tiles on right 60% (brand colours: lime + white)
       if (rand < 0.09) {
         const alpha = 0.6 + rand * 4.4 * 0.4; // 0.6 to 1.0
@@ -92,24 +111,7 @@ export function makeArenaTexture(): THREE.CanvasTexture {
     }
   }
 
-  // 4. Oversized faint "b" glyph built from lit tiles at (68%, 52%)
-  const centerX = Math.floor((cols * 0.68));
-  const centerY = Math.floor((rows * 0.52));
-
-  // "b" pixel tile coordinates relative to center — traced from the logo's "b":
-  // one-tile ascender, bowl with stepped right corners, and the foot to the left.
-  // (No extra tile beside the top of the stem: the logo has none.)
-  const bTiles = [
-    // Stem
-    [0, -1], [0, 0], [0, 1], [0, 2], [0, 3],
-    // Bowl: top bar, stepped right side, bottom bar
-    [1, 0], [2, 0], [3, 0],
-    [4, 1], [4, 2],
-    [1, 3], [2, 3], [3, 3],
-    // Foot
-    [-1, 3],
-  ];
-
+  // Light the "b" tiles on top of the grid
   for (const [dx, dy] of bTiles) {
     const c = centerX + dx;
     const r = centerY + dy;

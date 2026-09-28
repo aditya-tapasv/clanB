@@ -7,6 +7,7 @@
 // import { apiFetch } from "./http";
 import { MAIL_ROUTING } from "./config";
 import { logMock, mockLatency, mockReceipt } from "./mock";
+import { mockStore } from "./mockStore";
 import type { PartnerEnquiryInput, SubmissionReceipt } from "./types";
 
 export async function submitPartnerEnquiry(input: PartnerEnquiryInput): Promise<SubmissionReceipt> {
@@ -19,5 +20,7 @@ export async function submitPartnerEnquiry(input: PartnerEnquiryInput): Promise<
   // ── Dummy data (current) ────────────────────────────────────────────────────
   await mockLatency();
   logMock(`POST /partners → email ${MAIL_ROUTING.partner}`, input);
-  return mockReceipt("PTR");
+  const receipt = mockReceipt("PTR");
+  mockStore.partners.unshift({ ...input, ...receipt, status: "pending" });
+  return receipt;
 }

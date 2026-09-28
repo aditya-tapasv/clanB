@@ -4,7 +4,7 @@
 >
 > **Rule zero — change nothing.** Every value here (colours, fonts, copy, spacing classes, animation timings, easing, order of sections, routes, validation messages) is intentional. Do not "improve", rename, reorder, restyle, add sections, or swap libraries. If something here looks odd, it is still the spec: reproduce it as written. Section 17 lists the known quirks you must keep.
 >
-> **Source of truth.** The live code is in the GitHub repo **https://github.com/aditya-tapasv/clanB** (branch `main`, commit `f400843` or later). It is deployed at **https://clan-b.vercel.app**. If you can access the repo, clone it: that is the exact site. This document is the full written description, for when you must rebuild or verify without the repo.
+> **Source of truth.** The live code is in the GitHub repo **https://github.com/aditya-tapasv/clanB** (branch `main`, latest commit). It is deployed at **https://clan-b.vercel.app**. If you can access the repo, clone it: that is the exact site. This document is the full written description, for when you must rebuild or verify without the repo.
 
 ---
 
@@ -63,7 +63,7 @@ The website is a **cinematic, dark, lime-accented marketing and lead-capture sit
 5. **NestJS-ready API layer:** every backend call is written but **commented out**; the site runs on **dummy data**.
 
 ### Explicitly out of scope / removed (must stay removed)
-- **No login, sign-up, accounts, "My Clan B", saves or follows.** Old URLs `/login`, `/signup`, `/me` redirect to `/`.
+- **No passwords, saves or follows.** Login is OTP-only (section 6.6). `/signup` and `/register` redirect to `/login?mode=register`, and `/me` redirects to `/account`.
 - **No provider dashboard** (`/provider`) and **no provider profile pages** (`/providers/*`).
 - **Header shows only "Venues" and "Services"** (no Play, Events, Sports, Games).
 - The homepage **does not** contain the Play runway, Sports pulse, Games mood, Intelligence or Community sections.
@@ -108,7 +108,9 @@ components/
   motion/    SmoothScrollProvider, CinematicPage, CinematicSection, RevealHeadline, KineticText, Marquee
   hero/      ArenaHero, ArenaCanvas, makeArenaTexture, useLiquidLens, WebGLGuard
   home/      IntroSection, GamesMarqueeSection, MissionSection, HostStack (= Services stack), Trust
-  layout/    SiteHeader, SiteFooter, SearchCommandPalette
+  layout/    SiteHeader, SiteFooter
+  auth/      SessionProvider, AccountMenu, OtpAuthForm
+  dashboard/ DashboardShell, ui   ·   admin/ AdminOverview, SubmissionQueue, UsersTable   ·   vendor/ VendorViews   ·   account/ AccountView
   interior/  PageHero, InteriorPageLayout, StepGrid, FaqList
   leads/     BecomeVendorForm, PartnerForm, ListVenueForm, ContactForm, LeadSuccess, CheckboxGroup, validators
   discovery/ VenueCard, VenuesListingView, VenueSlotPicker, EventCard, … (secondary pages)
@@ -129,7 +131,7 @@ e2e/*.spec.ts, playwright.config.ts, next.config.ts, vercel.json
 ## 5. Brand
 
 ### 5.1 Logo
-- **Files:** `public/brand/clanb-logo.svg` (white + lime) and `public/brand/clanb-logo-currentcolor.svg` (white parts use `currentColor`). Identical copies live in `brand/`.
+- **Files:** `public/brand/clanb-logo.svg` (white + lime) and `public/brand/clanb-logo-currentcolor.svg` (white parts use `currentColor`).
 - **Artwork:** the wordmark **"CLAN" in white (#FFFFFF)** plus a lowercase **"b" in lime (#5CF111)**. It is built from pixel-style square tiles with small rounded corners, and there is a small lime square inside the "A". The `viewBox` is **`378 372 956 286`** (aspect ratio 956 : 286 ≈ 3.34).
 - **Seamless ("clean, not pixelated") rendering — required.** Every **filled** tile `<path>` carries a hairline stroke in its own fill colour:
   `stroke="<same colour as fill>" stroke-width="0.75" vector-effect="non-scaling-stroke" stroke-linejoin="round"`.
@@ -255,24 +257,21 @@ With an `href`, a Button renders a Next `<Link>`; without one it renders a `<but
        3. **List Your Venue**: "Monetize tables, courts & rooms" → `/services/list-venue` (icon Building2)
        4. **Contact Us**: "General questions & enquiries" → `/contact` (icon Mail)
 - **Right (≥`lg`):**
-  - A search pill (`rounded-full border border-white/15 bg-white/5 px-3.5 py-1.5 text-xs text-mist`) with a lime Search icon, "Search games, venues..." (≥`xl`) and a `⌘K` kbd (≥`xl`).
+  - **AccountMenu** (this replaced the old search pill):
+    - While loading: a `h-[34px] w-[150px]` pulsing placeholder pill.
+    - Signed out: a link **"Login / Register"** → `/login` (`rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-medium`, lime LogIn icon).
+    - Signed in: a pill with a lime initials avatar (`h-7 w-7`) + name + chevron. Its menu (`w-60 rounded-2xl bg-ink-soft/95`) shows the name, email/phone and a role badge, then "Admin dashboard" or "Vendor workspace" (for those roles), **My account**, and **Log out**.
   - **Explore Venues**: primary Button `withArrow`, `px-4 py-2 text-xs`, → `/venues`.
-- **Mobile (<`lg`):** round `h-10 w-10` search and burger buttons (`aria-label` "Search", and "Open menu"/"Close menu"). The drawer is `max-h-[calc(100dvh-72px)] overflow-y-auto border-t border-white/10 bg-ink/95 page-x py-6 backdrop-blur-xl`, and body scroll is locked while it's open. `<nav aria-label="Mobile">` contains:
+- **Mobile (<`lg`):** round `h-10 w-10` account and burger buttons. The account button (lime LogIn icon, or initials when signed in) → `/login`, or to the role home when signed in; the burger has `aria-label` "Open menu"/"Close menu". The drawer is `max-h-[calc(100dvh-72px)] overflow-y-auto border-t border-white/10 bg-ink/95 page-x py-6 backdrop-blur-xl`, and body scroll is locked while it's open. `<nav aria-label="Mobile">` contains:
   1. **Venues** (with ArrowUpRight)
   2. A **Services** accordion with the same 4 items
   3. **About Clan B** → `/about`
   4. **Help & Support** → `/help`
-  5. A divider, then a full-width **Explore Venues** primary button.
-- **⌘K / Ctrl+K** toggles the search palette.
-- There is **no login / account button anywhere.**
+  5. A divider, then **Login / Register** (ghost), or **My account / Dashboard + Log out** when signed in, followed by a full-width **Explore Venues** primary button.
+- **Tagline under the logo (homepage only):** "The future of **games.**" (`mt-1 pl-0.5 text-[10px] italic leading-none tracking-[0.08em] text-mist`, with "games." in lime).
+- There is no search in the header. The `/search` page still exists.
 
-### 6.3 Search palette (`SearchCommandPalette`)
-A Dialog (`max-w-xl p-0`, accessible title "Search Clan B" hidden visually).
-- **Input:** `role="combobox"`, placeholder "Search games, venues, events, sports...".
-- **Search:** debounced 200 ms, calling `repo.search()`. Results are grouped: **Events & sessions, Games, Sports, Venues**, max 3 each.
-- **Empty query:** shows 5 "Suggested" links (Play, Events, Games, Sports, Venues).
-- **Keyboard:** ↑/↓ move the selection and Enter opens it; Enter while loading goes to `/search?q=`. "See all results for "…" →" also goes to `/search?q=`.
-- **Footer hint:** "↑ ↓ to navigate · ↵ to open" and "ESC to close".
+### 6.3 (removed: the search palette was replaced by login)
 
 ### 6.4 Interior page template
 - **`InteriorPageLayout`:** `SmoothScrollProvider > CinematicPage > SiteHeader + <main id="main" class="min-h-screen flex flex-col justify-between"> + SiteFooter`.
@@ -313,6 +312,24 @@ A Dialog (`max-w-xl p-0`, accessible title "Search Clan B" hidden visually).
      - A **Chapters** row: "Chapters:" (`text-zinc-600 font-mono`), then **Services** → `/#host` and **Trust** → `/#trust` (`font-mono hover:text-signal`).
 
 ---
+
+### 6.6 Login and role areas (details in `docs/AUTH_RBAC.md`)
+- **`/login`:**
+  - Layout: SiteHeader, then a full-height main with `grid-bg` at 30% and a lime radial wash.
+  - Left column (≥lg): eyebrow "Clan B account", h1 "One login for players, vendors and the team", a sub line, and the italic tagline.
+  - Right: an `OtpAuthForm` card (`rounded-2xl border-white/10 bg-panel/90`) containing:
+    - a Login / Register pill tablist;
+    - (Register only) Full name;
+    - a Phone number / Email toggle and the identifier field;
+    - **Send OTP**, then the code step: "Change number", a 6-digit mono input with `tracking-[0.6em]`, a 30 s resend countdown, and **"Verify & log in"** or **"Verify & create account"**;
+    - a footer note: "No passwords… Vendor and admin access is granted by the Clan B team."
+- **Session:** an httpOnly `clanb_session` cookie (HS256 JWT, 7 days). `proxy.ts` guards `/admin` (admin), `/vendor` (vendor, admin) and `/account` (anyone signed in).
+- **`/admin`:** DashboardShell (fixed h-16 top bar with Logo 20 + "Admin" badge + user + Log out, and a w-64 sidebar). Pages:
+  - Overview (stat cards + queues);
+  - Vendor applications, Partner enquiries, Venue listings, Contact queries (expandable rows, status filters, Approve / Reject or Mark resolved / Reopen);
+  - Users & roles (a role select per user).
+- **`/vendor`:** the same shell with a "Vendor" badge. Pages: Overview (Bookings, Fill rate, Revenue, Pending payouts, This week, Check-ins today), Sessions, and Bookings & check-in.
+- **`/account`:** the interior page template with PageHero "MY ACCOUNT" / "Your Clan B", a profile card, and "My bookings".
 
 ## 7. Motion system (exact parameters)
 
@@ -454,12 +471,10 @@ void main(){
      - If `rand < 0.09`: a **lime** tile `rgba(92,241,17, 0.6 + rand·4.4·0.4)`.
      - Else if `rand < 0.12`: a **white** tile `rgba(255,255,255,0.85)`.
   4. A **big lime "b"** built from tiles `rgba(92,241,17,0.95)`, centred at `(floor(cols·0.68), floor(rows·0.52))`, traced from the logo's b. Offsets `[dx, dy]`:
-     - stem `[0,-1] [0,0] [0,1] [0,2] [0,3]`;
-     - top bar `[1,0] [2,0] [3,0]`;
-     - stepped right side `[4,1] [4,2]`;
-     - bottom bar `[1,3] [2,3] [3,3]`;
-     - foot `[-1,3]`.
-     - **There is no extra tile beside the top of the stem.**
+     - stem (tall ascender) `[0,-4] … [0,3]` (8 tiles);
+     - bowl top `[1,0] [2,0]`, right `[3,1] [3,2]`, bottom `[1,3] [2,3]` (corners left open so it reads rounded).
+     - **No accent tile above the stem.**
+     - A **clear halo** (columns `cx-1 … cx+4`, rows `cy-5 … cy+4`) gets no random lime/white tiles, only the unlit base tiles, so the "b" silhouette stays legible.
   - Texture settings: `SRGBColorSpace`, anisotropy 8, clamp-to-edge.
 - **Colour rule:** the hero uses **only lime (#5CF111) and white**. **No blue/cyan pixels, particles or glow.**
 
@@ -799,7 +814,7 @@ These exist, render with the same design system (PageHero + CinematicSection) an
 - `/about` (story, the 10-step north-star loop `#how`, offices, `#contact`, `#careers`, buttons "Book a Game" / "Become a Partner" → `/services`)
 - `/help`, `/help/[topic]` (bookings, refunds, safety, report — `/help/report` has a Report-an-Issue form)
 - `/legal/[doc]` (terms, privacy, cookies, accessibility, data-controls; each shows a "TODO legal review" note)
-- `/search?q=` (grouped results), `/checkout/[id]` (guest checkout), `/lab` (component showcase)
+- `/search?q=` (grouped results), `/checkout/[id]` (guest checkout)
 - **404** (`not-found.tsx`): "Error 404", "This tile is missing", a 3×3 lime "b" tile grid with the centre missing, and buttons "Back home" / "Find something to play".
 - **Error screens:**
   - `error.tsx`: "Something went wrong", "We dropped a piece", with Try again (`retry()`) and Home.
@@ -816,7 +831,8 @@ These exist, render with the same design system (PageHero + CinematicSection) an
 | `/for-providers/partner` | `/services/partner` | 308 |
 | `/for-providers/venues` | `/services/list-venue` | 308 |
 | `/for-providers/:path*` | `/services` | 308 |
-| `/login`, `/signup`, `/me` | `/` | 307 |
+| `/signup`, `/register` | `/login?mode=register` | 307 |
+| `/me` | `/account` | 307 |
 
 ---
 
@@ -850,7 +866,7 @@ Each function contains its **real `fetch` call commented out** (a "Real API" blo
 - **SEO:**
   - Per-route Metadata API titles/descriptions.
   - `sitemap.ts` lists `/`, `/play`, `/play/request`, `/events`, `/venues`, `/sports`, `/games`, `/clubs`, `/about`, `/help`, `/services`, `/services/vendor`, `/services/partner`, `/services/list-venue`, `/contact`, plus all event/venue/game/sport/help/legal detail pages.
-  - `robots.ts` allows all and disallows `/checkout/`, `/search`, `/lab`.
+  - `robots.ts` allows all and disallows `/checkout/`, `/search`, `/login`, `/account`, `/admin`, `/vendor`, `/api/`.
   - `opengraph-image.tsx` is 1200×630: the logo on ink with a lime wash, "The future of games." and "Play, host and run board games and sports — in one place."
   - JSON-LD: Organization + WebSite on every page, and Event on event pages.
 - **Accessibility:**
@@ -879,19 +895,19 @@ Each function contains its **real `fetch` call commented out** (a "Real API" blo
 
 | ID | Requirement | Acceptance criteria |
 |---|---|---|
-| FR-01 | Header shows only Venues + Services dropdown + search + Explore Venues | No Play/Events/Sports/Games/Login/My Clan B anywhere in header or mobile drawer |
+| FR-01 | Header shows Venues + Services dropdown + Login/Register (or account menu) + Explore Venues | No Play/Events/Sports/Games or search in the header |
 | FR-02 | Services dropdown lists 4 items in order | Become a Vendor, Partner with Clan B, List Your Venue, Contact Us — each links to its page |
 | FR-03 | Header is transparent over the home hero until scrolled > 24px | Then glass: `bg-ink/80 backdrop-blur-xl` + bottom border |
 | FR-04 | Hero buttons | "Explore Clan B" → /venues, "Become a Vendor" → /services/vendor |
 | FR-05 | Homepage order | Hero → Intro → Games marquee → Mission → Services (4 cards) → Trust → Footer; nothing else |
 | FR-06 | Services stack cards | Become a Vendor, Partner with Clan B, List Your Venue, Organize a Tournament (preselects Organizer) |
-| FR-07 | Hero visuals | Pixels/particles are lime + white only; the tile "b" has no extra tile beside the top of its stem |
+| FR-07 | Hero visuals | Pixels/particles are lime + white only; the tile "b" has a tall stem, open-corner bowl, clear halo and no accent tile |
 | FR-08 | Logo renders clean | No visible seams between tiles at 24px (header) or 36px (footer) |
 | FR-09 | Contact Us | Only Name + Query; validation messages as in section 10; success opens the "Query received!" popup and clears the form; routed to admin |
 | FR-10 | Partner enquiry | Required fields + ≥1 service; success card; routed to aditya.gopal.pandey@gmail.com (backend) |
 | FR-11 | Vendor application, venue listing | Fields/validation/success exactly as in sections 9.2/9.4; POST to /vendors and /venue-listings |
 | FR-12 | Venues pagination | 6 per page, numbered pager + prev/next, filters reset to page 1, "Showing X–Y of N" |
-| FR-13 | No authentication | /login, /signup, /me redirect to /; checkout books as a guest |
+| FR-13 | OTP login + roles | Phone/email → 6-digit OTP. Admin → /admin, vendor → /vendor, player → /account (or `next`). Wrong role is redirected; guests go to /login?next=. Checkout still works as a guest |
 | FR-14 | Old URLs | All /for-providers/* 308-redirect to /services equivalents |
 | FR-15 | Backend readiness | Every call in lib/api has its real fetch commented out and dummy data active |
 | FR-16 | Motion parity | Every parameter in section 7 matches exactly; reduced motion renders everything visible and static |
